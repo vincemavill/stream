@@ -137,7 +137,7 @@ function App(): React.JSX.Element {
       </Text>
       <View style={{flexDirection: 'row', alignSelf: 'center'}}>
         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-          {isEnabled ? 'Publsher' : 'Subscriber/Video'}
+          {isEnabled ? 'Publisher' : 'Subscriber/Video'}
         </Text>
         <View>
           <Switch
