@@ -7,6 +7,7 @@
 
 import React, {useState, useEffect, useRef, useContext} from 'react';
 import type {PropsWithChildren} from 'react';
+
 import {
   SafeAreaView,
   ScrollView,
@@ -21,7 +22,7 @@ import {
   Switch,
   Keyboard,
   TouchableOpacity,
-  Platform
+  Platform,
 } from 'react-native';
 
 import {
@@ -46,7 +47,8 @@ import {
 
 import {VLCPlayer, VlCPlayerView} from 'react-native-vlc-media-player';
 
-import {NodeCameraView} from 'react-native-nodemediaclient';
+// import {NodeCameraView} from 'react-native-nodemediaclient';
+import {NodeCameraView} from 'nodemedia-client-with-zoom';
 
 function App(): React.JSX.Element {
   const publisherRef = useRef();
@@ -61,6 +63,7 @@ function App(): React.JSX.Element {
   const [resetsubscriber, setResetSubscriber] = useState(true);
 
   const [camera, setCamera] = useState(1);
+  const [zoom, setZoom] = useState(0.0);
 
   useEffect(() => {
     requestCameraPermission();
@@ -190,7 +193,7 @@ function App(): React.JSX.Element {
       {isEnabled ? (
         resetpublisher ? (
           <>
-            <NodeCameraView
+            {/* <NodeCameraView
               style={{height: '75%', width: '100%'}}
               ref={v => (publisherRef.current = v)}
               // outputUrl={'rtmp://rtmp.huvr.com/live/vince?secret=huvr'}
@@ -205,7 +208,27 @@ function App(): React.JSX.Element {
                 videoFrontMirror: true,
               }}
               autopreview={true}
+            /> */}
+
+            <NodeCameraView
+              zoomScale={zoom}
+              autopreview={true}
+              smoothSkinLevel={3}
+              style={{height: '75%', width: '100%'}}
+              ref={v => (publisherRef.current = v)}
+              // outputUrl = {"rtmp://192.168.0.10/live/stream"}
+              outputUrl={textpublisher}
+              camera={{cameraId: 1, cameraFrontMirror: true}}
+              audio={{bitrate: 32000, profile: 1, samplerate: 44100}}
+              video={{
+                preset: 12,
+                bitrate: 400000,
+                profile: 1,
+                fps: 30,
+                videoFrontMirror: true,
+              }}
             />
+
             <View style={{flexDirection: 'row', alignSelf: 'center'}}>
               <TouchableOpacity
                 onPress={() => {
@@ -220,7 +243,7 @@ function App(): React.JSX.Element {
                     padding: 5,
                     textAlign: 'center',
                   }}>
-                    SWITCH CAMERA
+                  SWITCH CAMERA
                 </Text>
               </TouchableOpacity>
             </View>
