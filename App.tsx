@@ -201,11 +201,10 @@ function App(): React.JSX.Element {
                 preset: 12,
                 bitrate: 400000,
                 profile: 1,
-                fps: 15,
+                fps: 30,
                 videoFrontMirror: true,
               }}
               autopreview={true}
-              denoise={true}
             />
             <View style={{flexDirection: 'row', alignSelf: 'center'}}>
               <TouchableOpacity
@@ -232,7 +231,7 @@ function App(): React.JSX.Element {
       ) : resetsubscriber ? (
         <VLCPlayer
           style={{height: '75%', width: '100%'}}
-          videoAspectRatio="16:9"
+          videoAspectRatio="9:16"
           // source={{uri: 'https://rtmp.huvr.com/live/vince.flv'}}
           source={{uri: textsubscriber}}
         />
