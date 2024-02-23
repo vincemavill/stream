@@ -70,6 +70,7 @@ function App(): React.JSX.Element {
 
   const [camera, setCamera] = useState(1);
   const [zoom, setZoom] = useState(0.0);
+  const [mute, setMute] = useState(false);
 
   useEffect(() => {
     requestCameraPermission();
@@ -262,10 +263,24 @@ function App(): React.JSX.Element {
                   SWITCH CAMERA
                 </Text>
               </TouchableOpacity>
+              <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                    padding: 5,
+                    textAlign: 'center',
+                    color: '#fff',
+                  }}>
+                  {"    "}
+                </Text>
               <TouchableOpacity
                 onPress={() => {
-                  if (publisherRef.current) {
-                    publisherRef.current.switchCamera();
+                  if (mute) {
+                    setMute(false);
+                    publisherRef.current.unmute();
+                  } else {
+                    setMute(true);
+                    publisherRef.current.mute();
                   }
                 }}>
                 <Text
@@ -276,7 +291,7 @@ function App(): React.JSX.Element {
                     textAlign: 'center',
                     color: '#fff',
                   }}>
-                  SWITCH CAMERA
+                  {mute ? "MUTE" : "UNMUTE"}
                 </Text>
               </TouchableOpacity>
             </View>
