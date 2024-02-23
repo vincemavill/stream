@@ -59,10 +59,10 @@ function App(): React.JSX.Element {
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
   const [textpublisher, onChangeTextPublisher] = useState(
-    'rtmp://rtmp.huvr.com/live/heyhey3?secret=huvr',
+    '',
   );
   const [textsubscriber, onChangeTextSubscriber] = useState(
-    'https://rtmp.huvr.com/live/heyhey.flv',
+    '',
   );
 
   const [resetpublisher, setResetPublisher] = useState(true);
@@ -192,7 +192,7 @@ function App(): React.JSX.Element {
         <View style={{height: '100%', width: '100%'}}></View>
       )}
 
-      <View style={{position: 'absolute', zIndex: 1, top: 0, width: '100%'}}>
+      <View style={{position: 'absolute', zIndex: 1, top: 50, width: '100%'}}>
         <Text
           style={{
             fontSize: 20,
