@@ -59,10 +59,10 @@ function App(): React.JSX.Element {
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
   const [textpublisher, onChangeTextPublisher] = useState(
-    'rtmp://rtmp.huvr.com/live/heyhey3?secret=huvr',
+    '',
   );
   const [textsubscriber, onChangeTextSubscriber] = useState(
-    'https://rtmp.huvr.com/live/heyhey.flv',
+    '',
   );
 
   const [resetpublisher, setResetPublisher] = useState(true);
@@ -81,11 +81,15 @@ function App(): React.JSX.Element {
         const granted = await PermissionsAndroid.requestMultiple([
           PermissionsAndroid.PERMISSIONS.CAMERA,
           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+          // PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
         ]);
         if (
           granted['android.permission.CAMERA'] ===
             PermissionsAndroid.RESULTS.GRANTED &&
           granted['android.permission.RECORD_AUDIO'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          granted['android.permission.BLUETOOTH_CONNECT'] ===
             PermissionsAndroid.RESULTS.GRANTED
         ) {
           // if (nodeCameraRef.current) {
@@ -133,14 +137,14 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={backgroundStyle}>
-      <StatusBar
+      {/* <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
-      />
+      /> */}
 
       {isEnabled ? (
         resetpublisher ? (
-          <View style={{height: '100%', width: '100%'}}>
+          <>
             {/* <NodeCameraView
 
               zoomScale={zoom}
@@ -162,22 +166,22 @@ function App(): React.JSX.Element {
             /> */}
 
             <RTMPPublisher
-              // style={{height: '100%', width: '100%'}}
               style={{height: '100%', width: '100%'}}
-              ref={v => (publisherRef.current = v)}
+              ref={publisherRef}
               // streamURL="rtmp://your-publish-url"
-              streamName=""
+            
               streamURL={textpublisher}
-              // onConnectionFailedRtmp={() => ...}
-              // onConnectionStartedRtmp={() => ...}
-              // onConnectionSuccessRtmp={() => ...}
-              // onDisconnectRtmp={() => ...}
-              // onNewBitrateRtmp={() => ...}
+              streamName=""
+              onConnectionFailedRtmp={() => {}}
+              onConnectionStartedRtmp={() => {}}
+              onConnectionSuccessRtmp={() => {}}
+              onDisconnectRtmp={() => {}}
+              onNewBitrateRtmp={() => {}}
               onStreamStateChanged={(status: any) => {
                 console.log(status);
               }}
             />
-          </View>
+          </>
         ) : (
           <View style={{height: '100%', width: '100%'}}></View>
         )
@@ -199,12 +203,12 @@ function App(): React.JSX.Element {
             fontWeight: 'bold',
             padding: 5,
             textAlign: 'center',
-            color: '#fff',
+            color: isEnabled ? '#fff' : '#000',
           }}>
           React Native SRS rtmp
         </Text>
         <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-          <Text style={{fontSize: 20, fontWeight: 'bold', color: '#fff',}}>
+          <Text style={{fontSize: 20, fontWeight: 'bold', color: isEnabled ? '#fff' : '#000'}}>
             {isEnabled ? 'Publisher' : 'Subscriber/Video'}
           </Text>
           <View>
@@ -258,6 +262,23 @@ function App(): React.JSX.Element {
                   SWITCH CAMERA
                 </Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  if (publisherRef.current) {
+                    publisherRef.current.switchCamera();
+                  }
+                }}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                    padding: 5,
+                    textAlign: 'center',
+                    color: '#fff',
+                  }}>
+                  SWITCH CAMERA
+                </Text>
+              </TouchableOpacity>
             </View>
           </>
         ) : (
@@ -290,26 +311,5 @@ function App(): React.JSX.Element {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  remoteVideo: {
-    flex: 1,
-  },
-  remoteVideos: {
-    backgroundColor: '#0003',
-    height: 200,
-    width: 200,
-  },
-  localVideo: {
-    backgroundColor: '#0003',
-    height: 200,
-    width: 200,
-  },
-});
 
 export default App;

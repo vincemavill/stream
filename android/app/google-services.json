@@ -1,0 +1,131 @@
+{
+  "project_info": {
+    "project_number": "1011884275815",
+    "firebase_url": "https://huvrapp-81467.firebaseio.com",
+    "project_id": "huvrapp-81467",
+    "storage_bucket": "huvrapp-81467.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011884275815:android:1e09f2493e6a72aa05fcc2",
+        "android_client_info": {
+          "package_name": "com.huvr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1011884275815-h2ahu5pgf7r2k2r7ln905sv06jb1f9gb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLYkh57ZLBd9M1zD6T9_u9Fi7D7JCfHO0"
+        },
+        {
+          "current_key": "AIzaSyBV7Yr45r0gb-rmoGwDLqx8vK-YyUHAnQ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1011884275815-h2ahu5pgf7r2k2r7ln905sv06jb1f9gb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1011884275815-tjiqnfl8tf349t0013fvkcclto4i6mjc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.huvrinc.huvr-stg",
+                "app_store_id": "1587647147"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011884275815:android:6139cafb731bc57605fcc2",
+        "android_client_info": {
+          "package_name": "com.huvrinc.huvr.stg"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1011884275815-h2ahu5pgf7r2k2r7ln905sv06jb1f9gb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLYkh57ZLBd9M1zD6T9_u9Fi7D7JCfHO0"
+        },
+        {
+          "current_key": "AIzaSyBV7Yr45r0gb-rmoGwDLqx8vK-YyUHAnQ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1011884275815-h2ahu5pgf7r2k2r7ln905sv06jb1f9gb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1011884275815-tjiqnfl8tf349t0013fvkcclto4i6mjc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.huvrinc.huvr-stg",
+                "app_store_id": "1587647147"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011884275815:android:c527c276fb3f4c2e05fcc2",
+        "android_client_info": {
+          "package_name": "com.webrtc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1011884275815-h2ahu5pgf7r2k2r7ln905sv06jb1f9gb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLYkh57ZLBd9M1zD6T9_u9Fi7D7JCfHO0"
+        },
+        {
+          "current_key": "AIzaSyBV7Yr45r0gb-rmoGwDLqx8vK-YyUHAnQ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1011884275815-h2ahu5pgf7r2k2r7ln905sv06jb1f9gb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1011884275815-tjiqnfl8tf349t0013fvkcclto4i6mjc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.huvrinc.huvr-stg",
+                "app_store_id": "1587647147"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
