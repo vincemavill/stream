@@ -52,6 +52,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import RTMPPublisher from 'react-native-rtmp-publisher';
 
+import LobbyScreen from './src/LobbyScreen';
 import PublisherScreen from './src/PublisherScreen';
 import SubscriberScreen from './src/SubscriberScreen';
 
@@ -60,7 +61,8 @@ const Stack = createNativeStackNavigator();
 function App(): React.JSX.Element {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Publisher">
+      <Stack.Navigator initialRouteName="Lobby">
+        <Stack.Screen name="Lobby" component={LobbyScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Publisher" component={PublisherScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Subscriber" component={SubscriberScreen} options={{ headerShown: false }} />
       </Stack.Navigator>

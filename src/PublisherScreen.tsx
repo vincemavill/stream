@@ -43,7 +43,9 @@ import {
 import {VLCPlayer, VlCPlayerView} from 'react-native-vlc-media-player';
 // import {NodeCameraView} from 'react-native-nodemediaclient';
 // import {NodeCameraView} from 'nodemedia-client-with-zoom';
-import RTMPPublisher from 'react-native-rtmp-publisher';
+// import RTMPPublisher from 'react-native-rtmp-publisher';
+import RTMPPublisher from 'react-native-publisher';
+
 function App({navigation}): React.JSX.Element {
   const publisherRef = useRef();
   const [isEnabled, setIsEnabled] = useState(true);
@@ -57,37 +59,9 @@ function App({navigation}): React.JSX.Element {
   const [camera, setCamera] = useState(1);
   const [zoom, setZoom] = useState(0.0);
   const [mute, setMute] = useState(false);
-  useEffect(() => {
-    requestCameraPermission();
-  }, []);
-  const requestCameraPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.requestMultiple([
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-          // PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-        ]);
-        if (
-          granted['android.permission.CAMERA'] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          granted['android.permission.RECORD_AUDIO'] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          granted['android.permission.BLUETOOTH_CONNECT'] ===
-            PermissionsAndroid.RESULTS.GRANTED
-        ) {
-          // if (nodeCameraRef.current) {
-          //   nodeCameraRef.current.startPreview();
-          // }
-        } else {
-          console.log('Camera permission denied');
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    }
-  };
+  const [audioType, setAudioType] = useState('SPEAKER');
+  useEffect(() => {}, []);
+
   const handleResetPub = () => {
     Keyboard.dismiss();
     setResetPublisher(false);
@@ -115,28 +89,24 @@ function App({navigation}): React.JSX.Element {
       /> */}
       {resetpublisher ? (
         <>
-          {/* <NodeCameraView
-              zoomScale={zoom}
-              autopreview={true}
-              smoothSkinLevel={3}
-              style={{height: '75%', width: '100%'}}
-              ref={v => (publisherRef.current = v)}
-              // outputUrl = {"rtmp://192.168.0.10/live/stream"}
-              outputUrl={textpublisher}
-              camera={{cameraId: 1, cameraFrontMirror: true}}
-              audio={{bitrate: 32000, profile: 1, samplerate: 44100}}
-              video={{
-                preset: 12,
-                bitrate: 400000,
-                profile: 1,
-                fps: 30,
-                videoFrontMirror: true,
-              }}
-            /> */}
           <RTMPPublisher
             style={{height: '100%', width: '100%'}}
             ref={publisherRef}
             // streamURL="rtmp://your-publish-url"
+            videoSettings={{
+              width: 1080,
+              height: 1920,
+              bitrate: 1500000,
+              audioBitrate: 128000,
+            }}
+            allowedVideoOrientations={[
+              'portrait',
+              'landscapeLeft',
+              'landscapeRight',
+              // "portraitUpsideDown"
+            ]}
+            videoOrientation="portrait"
+            AudioInputType
             streamURL={textpublisher}
             streamName=""
             onConnectionFailedRtmp={() => {}}
@@ -175,6 +145,7 @@ function App({navigation}): React.JSX.Element {
             borderWidth: 1,
             padding: 10,
             backgroundColor: '#fff',
+            color: '#000',
           }}
           onChangeText={onChangeTextPublisher}
           value={textpublisher}
@@ -198,18 +169,18 @@ function App({navigation}): React.JSX.Element {
             }}>
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 15,
                 fontWeight: 'bold',
                 padding: 5,
                 textAlign: 'center',
-                color: '#fff',
+                color: '#FF0000',
               }}>
               SWITCH CAMERA
             </Text>
           </TouchableOpacity>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 15,
               fontWeight: 'bold',
               padding: 5,
               textAlign: 'center',
@@ -229,13 +200,49 @@ function App({navigation}): React.JSX.Element {
             }}>
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 15,
                 fontWeight: 'bold',
                 padding: 5,
                 textAlign: 'center',
-                color: '#fff',
+                color: '#FF0000',
               }}>
-              {mute ? 'MUTE' : 'UNMUTE'}
+              {mute ? 'UNMUTE' : 'MUTE'}
+            </Text>
+          </TouchableOpacity>
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: 'bold',
+              padding: 5,
+              textAlign: 'center',
+              color: '#fff',
+            }}>
+            {'    '}
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              if (publisherRef.current) {
+                if(audioType === "SPEAKER"){
+                  setAudioType('BLUETOOTH_HEADSET');
+                  publisherRef.current.AudioInputType('BLUETOOTH_HEADSET');
+                } else if (audioType === "BLUETOOTH_HEADSET"){
+                  setAudioType('WIRED_HEADSET');
+                  publisherRef.current.AudioInputType('WIRED_HEADSET');
+                } else if (audioType === "WIRED_HEADSET"){
+                  setAudioType('SPEAKER');
+                  publisherRef.current.AudioInputType('SPEAKER');
+                }
+              }
+            }}>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: 'bold',
+                padding: 5,
+                textAlign: 'center',
+                color: '#FF0000',
+              }}>
+              {audioType}
             </Text>
           </TouchableOpacity>
         </View>
