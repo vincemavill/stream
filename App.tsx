@@ -189,9 +189,11 @@ function App(): React.JSX.Element {
       ) : resetsubscriber ? (
         <VLCPlayer
           style={{height: '100%', width: '100%'}}
-          videoAspectRatio="16:9"
+          // videoAspectRatio="16:9"
           // source={{uri: 'https://rtmp.huvr.com/live/vince.flv'}}
           source={{uri: textsubscriber}}
+          // resizeMode="fill"
+          autoAspectRatio={true}
         />
       ) : (
         <View style={{height: '100%', width: '100%'}}></View>
