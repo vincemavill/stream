@@ -196,7 +196,7 @@ function App(): React.JSX.Element {
         <View style={{height: '100%', width: '100%'}}></View>
       )}
 
-      <View style={{position: 'absolute', zIndex: 1, top: 0, width: '100%'}}>
+      <View style={{position: 'absolute', zIndex: 1, top: 50, width: '100%'}}>
         <Text
           style={{
             fontSize: 20,
