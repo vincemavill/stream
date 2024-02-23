@@ -48,7 +48,9 @@ import {
 import {VLCPlayer, VlCPlayerView} from 'react-native-vlc-media-player';
 
 // import {NodeCameraView} from 'react-native-nodemediaclient';
-import {NodeCameraView} from 'nodemedia-client-with-zoom';
+// import {NodeCameraView} from 'nodemedia-client-with-zoom';
+
+import RTMPPublisher from 'react-native-rtmp-publisher';
 
 function App(): React.JSX.Element {
   const publisherRef = useRef();
@@ -56,8 +58,12 @@ function App(): React.JSX.Element {
   const toggleSwitch = () => setIsEnabled(!isEnabled);
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
-  const [textpublisher, onChangeTextPublisher] = useState('');
-  const [textsubscriber, onChangeTextSubscriber] = useState('');
+  const [textpublisher, onChangeTextPublisher] = useState(
+    'rtmp://rtmp.huvr.com/live/heyhey3?secret=huvr',
+  );
+  const [textsubscriber, onChangeTextSubscriber] = useState(
+    'https://rtmp.huvr.com/live/heyhey.flv',
+  );
 
   const [resetpublisher, setResetPublisher] = useState(true);
   const [resetsubscriber, setResetSubscriber] = useState(true);
@@ -100,9 +106,11 @@ function App(): React.JSX.Element {
     setTimeout(() => {
       setResetPublisher(true);
     }, 1000);
-    setTimeout(() => {
+    setTimeout(async () => {
       if (publisherRef.current) {
-        publisherRef.current.start();
+        // publisherRef.current.start();
+        // publisherRef.current.startStream();
+        await publisherRef.current.startStream();
       }
     }, 1500);
   };
@@ -129,88 +137,12 @@ function App(): React.JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <Text
-        style={{
-          fontSize: 20,
-          fontWeight: 'bold',
-          padding: 5,
-          textAlign: 'center',
-        }}>
-        React Native SRS rtmp
-      </Text>
-      <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-          {isEnabled ? 'Publisher' : 'Subscriber/Video'}
-        </Text>
-        <View>
-          <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor={isEnabled ? '#f5dd4b' : '#FF0000'}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-          />
-        </View>
-      </View>
-      {isEnabled ? (
-        <>
-          <TextInput
-            style={{height: 40, margin: 12, borderWidth: 1, padding: 10}}
-            onChangeText={onChangeTextPublisher}
-            value={textpublisher}
-            placeholder="rtmp://rtmp.huvr.com/live/example?secret=huvr"
-          />
-          <View style={{marginHorizontal: 12, marginBottom: 12}}>
-            <Button
-              onPress={() => {
-                handleResetPub();
-              }}
-              title={'publish'}
-              color="#841584"
-            />
-          </View>
-        </>
-      ) : (
-        <>
-          <TextInput
-            style={{height: 40, margin: 12, borderWidth: 1, padding: 10}}
-            onChangeText={onChangeTextSubscriber}
-            value={textsubscriber}
-            placeholder="https://rtmp.huvr.com/live/example.flv"
-          />
-          <View style={{marginHorizontal: 12, marginBottom: 12}}>
-            <Button
-              onPress={() => {
-                handleResetSub();
-              }}
-              title={'Start'}
-              color="#FFA500"
-            />
-          </View>
-        </>
-      )}
 
       {isEnabled ? (
         resetpublisher ? (
-          <>
+          <View style={{height: '100%', width: '100%'}}>
             {/* <NodeCameraView
-              style={{height: '75%', width: '100%'}}
-              ref={v => (publisherRef.current = v)}
-              // outputUrl={'rtmp://rtmp.huvr.com/live/vince?secret=huvr'}
-              outputUrl={textpublisher}
-              camera={{cameraId: 1, cameraFrontMirror: true}}
-              audio={{bitrate: 32000, profile: 1, samplerate: 44100}}
-              video={{
-                preset: 12,
-                bitrate: 400000,
-                profile: 1,
-                fps: 30,
-                videoFrontMirror: true,
-              }}
-              autopreview={true}
-            /> */}
 
-            <NodeCameraView
               zoomScale={zoom}
               autopreview={true}
               smoothSkinLevel={3}
@@ -227,8 +159,87 @@ function App(): React.JSX.Element {
                 fps: 30,
                 videoFrontMirror: true,
               }}
-            />
+            /> */}
 
+            <RTMPPublisher
+              // style={{height: '100%', width: '100%'}}
+              style={{height: '100%', width: '100%'}}
+              ref={v => (publisherRef.current = v)}
+              // streamURL="rtmp://your-publish-url"
+              streamName=""
+              streamURL={textpublisher}
+              // onConnectionFailedRtmp={() => ...}
+              // onConnectionStartedRtmp={() => ...}
+              // onConnectionSuccessRtmp={() => ...}
+              // onDisconnectRtmp={() => ...}
+              // onNewBitrateRtmp={() => ...}
+              onStreamStateChanged={(status: any) => {
+                console.log(status);
+              }}
+            />
+          </View>
+        ) : (
+          <View style={{height: '100%', width: '100%'}}></View>
+        )
+      ) : resetsubscriber ? (
+        <VLCPlayer
+          style={{height: '100%', width: '100%'}}
+          videoAspectRatio="16:9"
+          // source={{uri: 'https://rtmp.huvr.com/live/vince.flv'}}
+          source={{uri: textsubscriber}}
+        />
+      ) : (
+        <View style={{height: '100%', width: '100%'}}></View>
+      )}
+
+      <View style={{position: 'absolute', zIndex: 1, top: 0, width: '100%'}}>
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: 'bold',
+            padding: 5,
+            textAlign: 'center',
+            color: '#fff',
+          }}>
+          React Native SRS rtmp
+        </Text>
+        <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+          <Text style={{fontSize: 20, fontWeight: 'bold', color: '#fff',}}>
+            {isEnabled ? 'Publisher' : 'Subscriber/Video'}
+          </Text>
+          <View>
+            <Switch
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              thumbColor={isEnabled ? '#f5dd4b' : '#FF0000'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+            />
+          </View>
+        </View>
+        {isEnabled ? (
+          <>
+            <TextInput
+              style={{
+                height: 40,
+                margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+              }}
+              onChangeText={onChangeTextPublisher}
+              value={textpublisher}
+              placeholder="rtmp://rtmp.huvr.com/live/example?secret=huvr"
+            />
+            <View style={{marginHorizontal: 12, marginBottom: 12}}>
+              <Button
+                onPress={() => {
+                  handleResetPub();
+                }}
+                title={'publish'}
+                color="#841584"
+              />
+            </View>
             <View style={{flexDirection: 'row', alignSelf: 'center'}}>
               <TouchableOpacity
                 onPress={() => {
@@ -242,6 +253,7 @@ function App(): React.JSX.Element {
                     fontWeight: 'bold',
                     padding: 5,
                     textAlign: 'center',
+                    color: '#fff',
                   }}>
                   SWITCH CAMERA
                 </Text>
@@ -249,20 +261,31 @@ function App(): React.JSX.Element {
             </View>
           </>
         ) : (
-          <View style={{height: '75%', width: '100%'}}></View>
-        )
-      ) : resetsubscriber ? (
-        <VLCPlayer
-          style={{height: '75%', width: '100%'}}
-          videoAspectRatio="9:16"
-          // source={{uri: 'https://rtmp.huvr.com/live/vince.flv'}}
-          source={{uri: textsubscriber}}
-        />
-      ) : (
-        <View style={{height: '75%', width: '100%'}}></View>
-      )}
-
-      {/* <Button title="request permissions" onPress={requestCameraPermission} /> */}
+          <>
+            <TextInput
+              style={{
+                height: 40,
+                margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+              }}
+              onChangeText={onChangeTextSubscriber}
+              value={textsubscriber}
+              placeholder="https://rtmp.huvr.com/live/example.flv"
+            />
+            <View style={{marginHorizontal: 12, marginBottom: 12}}>
+              <Button
+                onPress={() => {
+                  handleResetSub();
+                }}
+                title={'Start'}
+                color="#FFA500"
+              />
+            </View>
+          </>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
