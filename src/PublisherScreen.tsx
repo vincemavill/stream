@@ -21,6 +21,7 @@ import {
   Keyboard,
   TouchableOpacity,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {
   ScreenCapturePickerView,
@@ -45,7 +46,6 @@ import {VLCPlayer, VlCPlayerView} from 'react-native-vlc-media-player';
 // import {NodeCameraView} from 'nodemedia-client-with-zoom';
 // import RTMPPublisher from 'react-native-rtmp-publisher';
 import RTMPPublisher from 'react-native-publisher';
-
 function App({navigation}): React.JSX.Element {
   const publisherRef = useRef();
   const [isEnabled, setIsEnabled] = useState(true);
@@ -60,8 +60,8 @@ function App({navigation}): React.JSX.Element {
   const [zoom, setZoom] = useState(0.0);
   const [mute, setMute] = useState(false);
   const [audioType, setAudioType] = useState('SPEAKER');
+  const [status_value, setStatus] = useState('');
   useEffect(() => {}, []);
-
   const handleResetPub = () => {
     Keyboard.dismiss();
     setResetPublisher(false);
@@ -73,6 +73,7 @@ function App({navigation}): React.JSX.Element {
         // publisherRef.current.start();
         // publisherRef.current.startStream();
         await publisherRef.current.startStream();
+        await publisherRef.current.setAudioInput('SPEAKER');
       }
     }, 1500);
   };
@@ -81,16 +82,33 @@ function App({navigation}): React.JSX.Element {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+  const handleSound = async () => {
+    if (publisherRef.current) {
+      if (audioType === 'SPEAKER') {
+        setAudioType('BLUETOOTH_HEADSET');
+        await publisherRef.current.setAudioInput('BLUETOOTH_HEADSET');
+      } else if (audioType === 'BLUETOOTH_HEADSET') {
+        setAudioType('WIRED_HEADSET');
+        await publisherRef.current.setAudioInput('WIRED_HEADSET');
+      } else if (audioType === 'WIRED_HEADSET') {
+        setAudioType('SPEAKER');
+        await publisherRef.current.setAudioInput('SPEAKER');
+      }
+    }
+  };
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <KeyboardAvoidingView
+      bg="white"
+      flex={1}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       {/* <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'} 
         backgroundColor={backgroundStyle.backgroundColor}
       /> */}
       {resetpublisher ? (
-        <>
+        <View style={{flex:1, alignItems: "center"}}>
           <RTMPPublisher
-            style={{height: '100%', width: '100%'}}
+            style={{height: '100%', width: '115%'}}
             ref={publisherRef}
             // streamURL="rtmp://your-publish-url"
             videoSettings={{
@@ -106,7 +124,7 @@ function App({navigation}): React.JSX.Element {
               // "portraitUpsideDown"
             ]}
             videoOrientation="portrait"
-            AudioInputType
+            AudioInputType="speaker"
             streamURL={textpublisher}
             streamName=""
             onConnectionFailedRtmp={() => {}}
@@ -116,9 +134,10 @@ function App({navigation}): React.JSX.Element {
             onNewBitrateRtmp={() => {}}
             onStreamStateChanged={(status: any) => {
               console.log(status);
+              setStatus(status)
             }}
           />
-        </>
+        </View>
       ) : (
         <View style={{height: '100%', width: '100%'}}></View>
       )}
@@ -209,7 +228,7 @@ function App({navigation}): React.JSX.Element {
               {mute ? 'UNMUTE' : 'MUTE'}
             </Text>
           </TouchableOpacity>
-          <Text
+          {/* <Text
             style={{
               fontSize: 15,
               fontWeight: 'bold',
@@ -221,18 +240,7 @@ function App({navigation}): React.JSX.Element {
           </Text>
           <TouchableOpacity
             onPress={() => {
-              if (publisherRef.current) {
-                if(audioType === "SPEAKER"){
-                  setAudioType('BLUETOOTH_HEADSET');
-                  publisherRef.current.AudioInputType('BLUETOOTH_HEADSET');
-                } else if (audioType === "BLUETOOTH_HEADSET"){
-                  setAudioType('WIRED_HEADSET');
-                  publisherRef.current.AudioInputType('WIRED_HEADSET');
-                } else if (audioType === "WIRED_HEADSET"){
-                  setAudioType('SPEAKER');
-                  publisherRef.current.AudioInputType('SPEAKER');
-                }
-              }
+              handleSound();
             }}>
             <Text
               style={{
@@ -244,10 +252,27 @@ function App({navigation}): React.JSX.Element {
               }}>
               {audioType}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
-    </SafeAreaView>
+      <View style={{position: 'absolute', zIndex: 1, bottom: 0}}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Subscriber');
+          }}>
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: 'bold',
+              padding: 5,
+              textAlign: 'center',
+              color: '#FF0000',
+            }}>
+            {status_value}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 export default App;
