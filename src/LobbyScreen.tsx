@@ -114,7 +114,14 @@ function App({navigation}): React.JSX.Element {
         <View style={{marginVertical: 50}}></View>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('Publisher');
+            navigation.navigate('Publisher', {
+              videosettings: {
+                width: 1080,
+                height: 1920,
+                bitrate: 1500000,
+                audioBitrate: 128000,
+              },
+            });
           }}>
           <Text
             style={{
@@ -124,7 +131,30 @@ function App({navigation}): React.JSX.Element {
               textAlign: 'center',
               color: '#FF0000',
             }}>
-            PROCEED
+            PROCEED TO STANDARD
+          </Text>
+        </TouchableOpacity>
+        <View style={{marginVertical: 20}}></View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Publisher', {
+              videosettings: {
+                width: 1080,
+                height: 1920,
+                bitrate: 5000 * 1024,
+                audioBitrate: 192 * 1000,
+              },
+            });
+          }}>
+          <Text
+            style={{
+              fontSize: 25,
+              fontWeight: 'bold',
+              padding: 5,
+              textAlign: 'center',
+              color: '#FF0000',
+            }}>
+            PROCEED TO HD
           </Text>
         </TouchableOpacity>
       </View>

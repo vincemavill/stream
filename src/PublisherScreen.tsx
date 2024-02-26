@@ -46,13 +46,13 @@ import {VLCPlayer, VlCPlayerView} from 'react-native-vlc-media-player';
 // import {NodeCameraView} from 'nodemedia-client-with-zoom';
 // import RTMPPublisher from 'react-native-rtmp-publisher';
 import RTMPPublisher from 'react-native-publisher';
-function App({navigation}): React.JSX.Element {
+function App({route, navigation}): React.JSX.Element {
   const publisherRef = useRef();
   const [isEnabled, setIsEnabled] = useState(true);
   const toggleSwitch = () => setIsEnabled(!isEnabled);
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
-  const [textpublisher, onChangeTextPublisher] = useState('');
+  const [textpublisher, onChangeTextPublisher] = useState('rtmp://rtmp.huvr.com/live');
   const [textsubscriber, onChangeTextSubscriber] = useState('');
   const [resetpublisher, setResetPublisher] = useState(true);
   const [resetsubscriber, setResetSubscriber] = useState(true);
@@ -106,17 +106,12 @@ function App({navigation}): React.JSX.Element {
         backgroundColor={backgroundStyle.backgroundColor}
       /> */}
       {resetpublisher ? (
-        <View style={{flex:1, alignItems: "center"}}>
+        <View style={{flex: 1, alignItems: 'center'}}>
           <RTMPPublisher
             style={{height: '100%', width: '115%'}}
             ref={publisherRef}
             // streamURL="rtmp://your-publish-url"
-            videoSettings={{
-              width: 1080,
-              height: 1920,
-              bitrate: 1500000,
-              audioBitrate: 128000,
-            }}
+            videoSettings={route.params.videosettings}
             allowedVideoOrientations={[
               'portrait',
               'landscapeLeft',
@@ -134,7 +129,7 @@ function App({navigation}): React.JSX.Element {
             onNewBitrateRtmp={() => {}}
             onStreamStateChanged={(status: any) => {
               console.log(status);
-              setStatus(status)
+              setStatus(status);
             }}
           />
         </View>
@@ -142,6 +137,21 @@ function App({navigation}): React.JSX.Element {
         <View style={{height: '100%', width: '100%'}}></View>
       )}
       <View style={{position: 'absolute', zIndex: 1, top: 50, width: '100%'}}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: 'bold',
+              padding: 5,
+              textAlign: 'center',
+              color: '#FF0000',
+            }}>
+            GO BACK
+          </Text>
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('Subscriber');

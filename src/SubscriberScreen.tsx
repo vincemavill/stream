@@ -51,7 +51,7 @@ function App({navigation}): React.JSX.Element {
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
   const [textpublisher, onChangeTextPublisher] = useState('');
-  const [textsubscriber, onChangeTextSubscriber] = useState('');
+  const [textsubscriber, onChangeTextSubscriber] = useState('https://rtmp.huvr.com/live/');
   const [resetpublisher, setResetPublisher] = useState(true);
   const [resetsubscriber, setResetSubscriber] = useState(true);
   const [camera, setCamera] = useState(1);
