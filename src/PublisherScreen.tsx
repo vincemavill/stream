@@ -108,7 +108,7 @@ function App({route, navigation}): React.JSX.Element {
       {resetpublisher ? (
         <View style={{flex: 1, alignItems: 'center'}}>
           <RTMPPublisher
-            style={{height: '100%', width: '115%'}}
+            style={{height: '100%', width: Platform.OS === 'ios' ? '100%' : '115%'}}
             ref={publisherRef}
             // streamURL="rtmp://your-publish-url"
             videoSettings={route.params.videosettings}
