@@ -21,6 +21,7 @@ import {
   Keyboard,
   TouchableOpacity,
   Platform,
+  Dimensions,
   KeyboardAvoidingView,
 } from 'react-native';
 import {
@@ -52,7 +53,9 @@ function App({route, navigation}): React.JSX.Element {
   const toggleSwitch = () => setIsEnabled(!isEnabled);
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
-  const [textpublisher, onChangeTextPublisher] = useState('rtmp://rtmp.huvr.com/live');
+  const [textpublisher, onChangeTextPublisher] = useState(
+    'rtmp://rtmp.huvr.com/live',
+  );
   const [textsubscriber, onChangeTextSubscriber] = useState('');
   const [resetpublisher, setResetPublisher] = useState(true);
   const [resetsubscriber, setResetSubscriber] = useState(true);
@@ -60,7 +63,7 @@ function App({route, navigation}): React.JSX.Element {
   const [zoom, setZoom] = useState(0.0);
   const [mute, setMute] = useState(false);
   const [audioType, setAudioType] = useState('SPEAKER');
-  const [status_value, setStatus] = useState('');
+  const [status_value, setStatus] = useState('haha');
   useEffect(() => {}, []);
   const handleResetPub = () => {
     Keyboard.dismiss();
@@ -76,6 +79,16 @@ function App({route, navigation}): React.JSX.Element {
         await publisherRef.current.setAudioInput('SPEAKER');
       }
     }, 1500);
+  };
+  const handleStopStream = async () => {
+    if (publisherRef.current) {
+      await publisherRef.current.stopStream();
+    }
+  };
+  const handleReconnect = async () => {
+    if (publisherRef.current) {
+      await publisherRef.current.startStream();
+    }
   };
   // -------------------------------------------
   const isDarkMode = useColorScheme() === 'dark';
@@ -108,10 +121,19 @@ function App({route, navigation}): React.JSX.Element {
       {resetpublisher ? (
         <View style={{flex: 1, alignItems: 'center'}}>
           <RTMPPublisher
-            style={{height: '100%', width: Platform.OS === 'ios' ? '100%' : '115%'}}
+            style={{
+              height: '100%',
+              width: Platform.OS === 'ios' ? '100%' : '115%',
+            }}
             ref={publisherRef}
             // streamURL="rtmp://your-publish-url"
             videoSettings={route.params.videosettings}
+            // videoSettings={{
+            //   width: 1080,
+            //   height: 1920,
+            //   bitrate: 1500000,
+            //   audioBitrate: 128000,
+            // }}
             allowedVideoOrientations={[
               'portrait',
               'landscapeLeft',
@@ -122,10 +144,14 @@ function App({route, navigation}): React.JSX.Element {
             AudioInputType="speaker"
             streamURL={textpublisher}
             streamName=""
-            onConnectionFailedRtmp={() => {}}
+            onConnectionFailedRtmp={() => {
+              handleReconnect();
+            }}
             onConnectionStartedRtmp={() => {}}
             onConnectionSuccessRtmp={() => {}}
-            onDisconnectRtmp={() => {}}
+            onDisconnectRtmp={() => {
+              // handleReconnect()
+            }}
             onNewBitrateRtmp={() => {}}
             onStreamStateChanged={(status: any) => {
               console.log(status);
@@ -152,21 +178,6 @@ function App({route, navigation}): React.JSX.Element {
             GO BACK
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Subscriber');
-          }}>
-          <Text
-            style={{
-              fontSize: 15,
-              fontWeight: 'bold',
-              padding: 5,
-              textAlign: 'center',
-              color: '#FF0000',
-            }}>
-            GO TO SUBSCRIBER
-          </Text>
-        </TouchableOpacity>
         <TextInput
           style={{
             height: 40,
@@ -180,14 +191,25 @@ function App({route, navigation}): React.JSX.Element {
           value={textpublisher}
           placeholder="rtmp://rtmp.huvr.com/live/example?secret=huvr"
         />
-        <View style={{marginHorizontal: 12, marginBottom: 12}}>
-          <Button
-            onPress={() => {
-              handleResetPub();
-            }}
-            title={'publish'}
-            color="#841584"
-          />
+        <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+          <View style={{marginHorizontal: 12, marginBottom: 12, width: 100}}>
+            <Button
+              onPress={() => {
+                handleResetPub();
+              }}
+              title={'publish'}
+              color="#841584"
+            />
+          </View>
+          <View style={{marginHorizontal: 12, marginBottom: 12, width: 100}}>
+            <Button
+              onPress={() => {
+                handleStopStream();
+              }}
+              title={'stop'}
+              color="#FF0000"
+            />
+          </View>
         </View>
         <View style={{flexDirection: 'row', alignSelf: 'center'}}>
           <TouchableOpacity
@@ -266,21 +288,16 @@ function App({route, navigation}): React.JSX.Element {
         </View>
       </View>
       <View style={{position: 'absolute', zIndex: 1, bottom: 0}}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Subscriber');
+        <Text
+          style={{
+            fontSize: 15,
+            fontWeight: 'bold',
+            padding: 5,
+            textAlign: 'center',
+            color: '#FF0000',
           }}>
-          <Text
-            style={{
-              fontSize: 15,
-              fontWeight: 'bold',
-              padding: 5,
-              textAlign: 'center',
-              color: '#FF0000',
-            }}>
-            {status_value}
-          </Text>
-        </TouchableOpacity>
+          {status_value}
+        </Text>
       </View>
     </KeyboardAvoidingView>
   );

@@ -21,6 +21,7 @@ import {
   Keyboard,
   TouchableOpacity,
   Platform,
+  Dimensions,
 } from 'react-native';
 import {
   ScreenCapturePickerView,
@@ -55,8 +56,8 @@ function App({navigation}): React.JSX.Element {
   const [resetpublisher, setResetPublisher] = useState(true);
   const [resetsubscriber, setResetSubscriber] = useState(true);
   const [camera, setCamera] = useState(1);
-  const [zoom, setZoom] = useState(0.0);
-  const [mute, setMute] = useState(false);
+  const [textbitrate, setTextBitrate] = useState('1500000');
+  const [textaudiobitrate, setTextAudioBitrate] = useState('128000');
   useEffect(() => {
     requestCameraPermission();
   }, []);
@@ -116,8 +117,8 @@ function App({navigation}): React.JSX.Element {
           onPress={() => {
             navigation.navigate('Publisher', {
               videosettings: {
-                width: 1080,
-                height: 1920,
+                width: 720,
+                height: 1280,
                 bitrate: 1500000,
                 audioBitrate: 128000,
               },
@@ -131,7 +132,7 @@ function App({navigation}): React.JSX.Element {
               textAlign: 'center',
               color: '#FF0000',
             }}>
-            PROCEED TO STANDARD
+            PUBLISHER STANDARD
           </Text>
         </TouchableOpacity>
         <View style={{marginVertical: 20}}></View>
@@ -154,7 +155,92 @@ function App({navigation}): React.JSX.Element {
               textAlign: 'center',
               color: '#FF0000',
             }}>
-            PROCEED TO HD
+            PUBLISHER HD
+          </Text>
+        </TouchableOpacity>
+        <View style={{marginVertical: 20}}></View>
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: 'bold',
+            padding: 5,
+            color: '#FF0000',
+          }}>
+          Bitrate
+        </Text>
+        <TextInput
+          style={{
+            height: 40,
+            margin: 12,
+            borderWidth: 1,
+            padding: 10,
+            backgroundColor: '#fff',
+            color: '#000',
+          }}
+          onChangeText={setTextBitrate}
+          value={textbitrate}
+          placeholder="bitrate"
+          keyboardType="numeric"
+        />
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: 'bold',
+            padding: 5,
+            color: '#FF0000',
+          }}>
+          AudioBitrate
+        </Text>
+        <TextInput
+          style={{
+            height: 40,
+            margin: 12,
+            borderWidth: 1,
+            padding: 10,
+            backgroundColor: '#fff',
+            color: '#000',
+          }}
+          onChangeText={setTextAudioBitrate}
+          value={textaudiobitrate}
+          placeholder="audioBitrate"
+          keyboardType="numeric"
+        />
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Publisher', {
+              videosettings: {
+                width: 720,
+                height: 1280,
+                bitrate: parseInt(textbitrate),
+                audioBitrate: parseInt(textaudiobitrate),
+              },
+            });
+          }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              padding: 5,
+              textAlign: 'center',
+              color: '#FF0000',
+            }}>
+            PUBLISHER COSTUM BITRATE
+          </Text>
+        </TouchableOpacity>
+        <View style={{marginVertical: 20}}></View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Subscriber');
+          }}>
+          <Text
+            style={{
+              fontSize: 25,
+              fontWeight: 'bold',
+              padding: 5,
+              textAlign: 'center',
+              color: '#FF0000',
+            }}>
+            GO TO SUBSCRIBER
           </Text>
         </TouchableOpacity>
       </View>
