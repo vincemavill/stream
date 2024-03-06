@@ -22,6 +22,7 @@ import {
   TouchableOpacity,
   Platform,
   Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {
   ScreenCapturePickerView,
@@ -51,13 +52,15 @@ function App({navigation}): React.JSX.Element {
   const toggleSwitch = () => setIsEnabled(!isEnabled);
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
-  const [textpublisher, onChangeTextPublisher] = useState('');
-  const [textsubscriber, onChangeTextSubscriber] = useState('');
-  const [resetpublisher, setResetPublisher] = useState(true);
-  const [resetsubscriber, setResetSubscriber] = useState(true);
-  const [camera, setCamera] = useState(1);
-  const [textbitrate, setTextBitrate] = useState('1500000');
-  const [textaudiobitrate, setTextAudioBitrate] = useState('128000');
+
+  const [textname, onChangeTextName] = useState('streamTest1');
+  const [textpublisher, onChangeTextPublisher] = useState(
+    'ws://34.236.237.158:5080/WebRTCAppEE/websocket',
+  );
+  const [textnameplayer, onChangeTextNamePlayer] = useState('streamTest1');
+  const [textplayer, onChangeTextPlayer] = useState(
+    'ws://34.236.237.158:5080/WebRTCAppEE/websocket',
+  );
   useEffect(() => {
     requestCameraPermission();
   }, []);
@@ -95,7 +98,10 @@ function App({navigation}): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <KeyboardAvoidingView
+      bg="white"
+      flex={1}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View>
         <View style={{marginTop: '30%'}}>
           <Text
@@ -109,40 +115,118 @@ function App({navigation}): React.JSX.Element {
             REACT NATIVE ANT MEDIA
           </Text>
           <View style={{paddingVertical: 20}}></View>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('WebRTCS');
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: '#000',
+              margin: 10,
+              padding: 10,
             }}>
-            <Text
+            <TextInput
               style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                padding: 5,
-                textAlign: 'center',
-                color: '#FF0000',
+                height: 40,
+                // margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+                color: '#000',
+              }}
+              onChangeText={onChangeTextName}
+              value={textname}
+              placeholder="Stream Name"
+            />
+            <View style={{padding: 5}}></View>
+            <TextInput
+              style={{
+                height: 40,
+                // margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+                color: '#000',
+              }}
+              onChangeText={onChangeTextPublisher}
+              value={textpublisher}
+              placeholder="ws://"
+            />
+            <View style={{padding: 5}}></View>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('WebRTCS', {
+                  "stream_name" : textname ,
+                  "player_url": textpublisher,
+                });
               }}>
-              PROCEED TO PUBLISHER
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  padding: 5,
+                  textAlign: 'center',
+                  color: '#FF0000',
+                }}>
+                PROCEED TO PUBLISHER
+              </Text>
+            </TouchableOpacity>
+          </View>
           <View style={{paddingVertical: 20}}></View>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('WebRTCPlayer');
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: '#000',
+              margin: 10,
+              padding: 10,
             }}>
-            <Text
+            <TextInput
               style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                padding: 5,
-                textAlign: 'center',
-                color: '#FF0000',
+                height: 40,
+                // margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+                color: '#000',
+              }}
+              onChangeText={onChangeTextNamePlayer}
+              value={textnameplayer}
+              placeholder="Stream Name"
+            />
+            <View style={{padding: 5}}></View>
+            <TextInput
+              style={{
+                height: 40,
+                // margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+                color: '#000',
+              }}
+              onChangeText={onChangeTextPlayer}
+              value={textplayer}
+              placeholder="ws://"
+            />
+            <View style={{padding: 5}}></View>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('WebRTCPlayer', {
+                  "stream_name" : textnameplayer ,
+                  "player_url": textplayer,
+                });
               }}>
-              PROCEED TO PLAYER
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  padding: 5,
+                  textAlign: 'center',
+                  color: '#FF0000',
+                }}>
+                PROCEED TO PLAYER
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 export default App;

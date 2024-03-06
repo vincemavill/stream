@@ -12,17 +12,17 @@ import {useAntMedia, rtc_view} from '@antmedia/react-native-ant-media';
 
 import InCallManager from 'react-native-incall-manager';
 
-export default function App({navigation}) {
-  var defaultStreamName = 'streamTest1';
+export default function App({navigation, route}) {
+
+  var defaultStreamName = route.params.stream_name;
   // const webSocketUrl = 'ws://server.huvr.com:5080/WebRTCAppEE/websocket';
-  const webSocketUrl = 'ws://34.236.237.158:5080/WebRTCAppEE/websocket';
+  // const webSocketUrl = 'ws://34.236.237.158:5080/WebRTCAppEE/websocket';
   //or webSocketUrl: 'wss://server.com:5443/WebRTCAppEE/websocket',
+  const webSocketUrl = route.params.player_url;
 
   const streamNameRef = useRef<string>(defaultStreamName);
   const [localMedia, setLocalMedia] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [textname, onChangeTextName] = useState('streamTest1');
-  const [textpublisher, onChangeTextPublisher] = useState('ws://34.236.237.158:5080/WebRTCAppEE/websocket');
 
 
   let localStream: any = useRef(null);
@@ -30,19 +30,17 @@ export default function App({navigation}) {
   useEffect(() => {
     console.log(' localStream.current ', localStream.current);
   }, []);
-  useEffect(() => {
-    streamNameRef.current = textname;
-  }, [textname]);
+
 
   const adaptor = useAntMedia({
-    url: textpublisher,
+    url: webSocketUrl,
     mediaConstraints: {
       audio: true,
       video: {
         width: 1920,
         height: 1080,
         frameRate: 30,
-        facingMode: 'front',
+        facingMode: 'front', // front or  environment
       },
     },
     callback(command: any, data: any) {
@@ -116,37 +114,18 @@ export default function App({navigation}) {
     adaptor.stop(streamNameRef.current);
   }, [adaptor]);
 
+  const handleSwitchCamera = () => {
+    if(adaptor.localStream.current){
+      const videoTrack = adaptor.localStream.current.getVideoTracks()[0];
+      videoTrack._switchCamera();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.box}>
         <Text style={styles.heading}>Ant Media WebRTC Publish</Text>
         {localMedia ? <>{rtc_view(localMedia, styles.streamPlayer)}</> : <></>}
-        <TextInput
-          style={{
-            height: 40,
-            // margin: 12,
-            borderWidth: 1,
-            padding: 10,
-            backgroundColor: '#fff',
-            color: '#000',
-          }}
-          onChangeText={onChangeTextName}
-          value={textname}
-          placeholder="Stream Name"
-        />
-        <TextInput
-          style={{
-            height: 40,
-            // margin: 12,
-            borderWidth: 1,
-            padding: 10,
-            backgroundColor: '#fff',
-            color: '#000',
-          }}
-          onChangeText={onChangeTextPublisher}
-          value={textpublisher}
-          placeholder="ws://"
-        />
         {!isPlaying ? (
           <>
             <TouchableOpacity onPress={handlePublish} style={styles.button}>
@@ -160,6 +139,13 @@ export default function App({navigation}) {
             </TouchableOpacity>
           </>
         )}
+        <>
+            <TouchableOpacity onPress={()=>{
+              handleSwitchCamera()
+            }} style={styles.button}>
+              <Text>Swithc Camera</Text>
+            </TouchableOpacity>
+        </>
         <>
             <TouchableOpacity onPress={()=>{
               navigation.goBack();

@@ -10,10 +10,11 @@ export default function App() {
   const [cachedRemotePC, setCachedRemotePC] = React.useState();
 
   const [isMuted, setIsMuted] = React.useState(false);
+  const [isFront, setIsFront] = React.useState(false);
 
   const startLocalStream = async () => {
     // isFront will determine if the initial camera should face user or environment
-    const isFront = true;
+
     const devices = await mediaDevices.enumerateDevices();
 
     const facing = isFront ? 'front' : 'environment';

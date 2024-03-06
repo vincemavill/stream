@@ -10,30 +10,29 @@ import {
 } from 'react-native';
 import {useAntMedia, rtc_view} from '@antmedia/react-native-ant-media';
 
-export default function App({navigation}) {
-  var defaultStreamName = 'stream1';
-  const webSocketUrl = 'ws://server.com:5080/WebRTCAppEE/websocket';
+export default function App({navigation,route}) {
+  var defaultStreamName = route.params.stream_name;
+  // const webSocketUrl = 'ws://server.huvr.com:5080/WebRTCAppEE/websocket';
+  // const webSocketUrl = 'ws://34.236.237.158:5080/WebRTCAppEE/websocket';
   //or webSocketUrl: 'wss://server.com:5443/WebRTCAppEE/websocket',
+  const webSocketUrl = route.params.player_url;
+  
 
   const streamNameRef = useRef<string>(defaultStreamName);
   const [remoteMedia, setRemoteStream] = useState<string>('');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [textname, onChangeTextName] = useState('streamTest1');
-  const [textplayer, onChangeTextPlayer] = useState('ws://34.236.237.158:5080/WebRTCAppEE/websocket');
 
-  useEffect(() => {
-    streamNameRef.current = textname;
-  }, [textname]);
+
 
   const adaptor = useAntMedia({
-    url: textplayer,
+    url: webSocketUrl,
     mediaConstraints: {
       audio: true,
       video: {
         width: 1920,
         height: 1080,
         frameRate: 30,
-        facingMode: 'front',
+        facingMode: 'front', // front or  environment
       },
     },
     callback(command: any, data: any) {
@@ -94,32 +93,6 @@ export default function App({navigation}) {
     <SafeAreaView style={styles.container}>
       <View style={styles.box}>
         <Text style={styles.heading}>Ant Media WebRTC Play</Text>
-        <TextInput
-          style={{
-            height: 40,
-            // margin: 12,
-            borderWidth: 1,
-            padding: 10,
-            backgroundColor: '#fff',
-            color: '#000',
-          }}
-          onChangeText={onChangeTextName}
-          value={textname}
-          placeholder="Stream Name"
-        />
-        <TextInput
-          style={{
-            height: 40,
-            // margin: 12,
-            borderWidth: 1,
-            padding: 10,
-            backgroundColor: '#fff',
-            color: '#000',
-          }}
-          onChangeText={onChangeTextPlayer}
-          value={textplayer}
-          placeholder="ws://"
-        />
         {!isPlaying ? (
           <>
             <TouchableOpacity onPress={handlePlay} style={styles.startButton}>
