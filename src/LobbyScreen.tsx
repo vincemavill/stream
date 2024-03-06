@@ -96,153 +96,51 @@ function App({navigation}): React.JSX.Element {
   };
   return (
     <SafeAreaView style={backgroundStyle}>
-      <View style={{marginTop: '50%'}}>
-        <TouchableOpacity
-          onPress={() => {
-            requestCameraPermission();
-          }}>
+      <View>
+        <View style={{marginTop: '30%'}}>
           <Text
             style={{
-              fontSize: 25,
+              fontSize: 30,
               fontWeight: 'bold',
               padding: 5,
               textAlign: 'center',
               color: '#FF0000',
             }}>
-            CHECK PERMISSION
+            REACT NATIVE ANT MEDIA
           </Text>
-        </TouchableOpacity>
-        <View style={{marginVertical: 50}}></View>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Publisher', {
-              videosettings: {
-                width: 720,
-                height: 1280,
-                bitrate: 1500000,
-                audioBitrate: 128000,
-              },
-            });
-          }}>
-          <Text
-            style={{
-              fontSize: 25,
-              fontWeight: 'bold',
-              padding: 5,
-              textAlign: 'center',
-              color: '#FF0000',
+          <View style={{paddingVertical: 20}}></View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('WebRTCS');
             }}>
-            PUBLISHER STANDARD
-          </Text>
-        </TouchableOpacity>
-        <View style={{marginVertical: 20}}></View>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Publisher', {
-              videosettings: {
-                width: 1080,
-                height: 1920,
-                bitrate: 5000 * 1024,
-                audioBitrate: 192 * 1000,
-              },
-            });
-          }}>
-          <Text
-            style={{
-              fontSize: 25,
-              fontWeight: 'bold',
-              padding: 5,
-              textAlign: 'center',
-              color: '#FF0000',
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                padding: 5,
+                textAlign: 'center',
+                color: '#FF0000',
+              }}>
+              PROCEED TO PUBLISHER
+            </Text>
+          </TouchableOpacity>
+          <View style={{paddingVertical: 20}}></View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('WebRTCPlayer');
             }}>
-            PUBLISHER HD
-          </Text>
-        </TouchableOpacity>
-        <View style={{marginVertical: 20}}></View>
-        <Text
-          style={{
-            fontSize: 14,
-            fontWeight: 'bold',
-            padding: 5,
-            color: '#FF0000',
-          }}>
-          Bitrate
-        </Text>
-        <TextInput
-          style={{
-            height: 40,
-            margin: 12,
-            borderWidth: 1,
-            padding: 10,
-            backgroundColor: '#fff',
-            color: '#000',
-          }}
-          onChangeText={setTextBitrate}
-          value={textbitrate}
-          placeholder="bitrate"
-          keyboardType="numeric"
-        />
-        <Text
-          style={{
-            fontSize: 14,
-            fontWeight: 'bold',
-            padding: 5,
-            color: '#FF0000',
-          }}>
-          AudioBitrate
-        </Text>
-        <TextInput
-          style={{
-            height: 40,
-            margin: 12,
-            borderWidth: 1,
-            padding: 10,
-            backgroundColor: '#fff',
-            color: '#000',
-          }}
-          onChangeText={setTextAudioBitrate}
-          value={textaudiobitrate}
-          placeholder="audioBitrate"
-          keyboardType="numeric"
-        />
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Publisher', {
-              videosettings: {
-                width: 720,
-                height: 1280,
-                bitrate: parseInt(textbitrate),
-                audioBitrate: parseInt(textaudiobitrate),
-              },
-            });
-          }}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: 'bold',
-              padding: 5,
-              textAlign: 'center',
-              color: '#FF0000',
-            }}>
-            PUBLISHER COSTUM BITRATE
-          </Text>
-        </TouchableOpacity>
-        <View style={{marginVertical: 20}}></View>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Subscriber');
-          }}>
-          <Text
-            style={{
-              fontSize: 25,
-              fontWeight: 'bold',
-              padding: 5,
-              textAlign: 'center',
-              color: '#FF0000',
-            }}>
-            GO TO SUBSCRIBER
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                padding: 5,
+                textAlign: 'center',
+                color: '#FF0000',
+              }}>
+              PROCEED TO PLAYER
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );

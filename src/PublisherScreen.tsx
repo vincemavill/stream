@@ -54,7 +54,7 @@ function App({route, navigation}): React.JSX.Element {
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
   const [textpublisher, onChangeTextPublisher] = useState(
-    'rtmp://rtmp.huvr.com/live',
+    'http://localhost:3016/broadcast?id=31f4b6df-76c4-43e7-9af8-hahaha&name=User-5714',
   );
   const [textsubscriber, onChangeTextSubscriber] = useState('');
   const [resetpublisher, setResetPublisher] = useState(true);

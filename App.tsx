@@ -50,11 +50,11 @@ import {VLCPlayer, VlCPlayerView} from 'react-native-vlc-media-player';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import RTMPPublisher from 'react-native-rtmp-publisher';
-
 import LobbyScreen from './src/LobbyScreen';
 import PublisherScreen from './src/PublisherScreen';
 import SubscriberScreen from './src/SubscriberScreen';
+import WebRTCScreen from './src/WebRTCScreen';
+import WebRTCPlayerScreen from './src/WebRTCPlayerScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -65,6 +65,8 @@ function App(): React.JSX.Element {
         <Stack.Screen name="Lobby" component={LobbyScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Publisher" component={PublisherScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Subscriber" component={SubscriberScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="WebRTCS" component={WebRTCScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="WebRTCPlayer" component={WebRTCPlayerScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
