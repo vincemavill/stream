@@ -55,11 +55,11 @@ function App({navigation}): React.JSX.Element {
 
   const [textname, onChangeTextName] = useState('streamTest1');
   const [textpublisher, onChangeTextPublisher] = useState(
-    'ws://34.236.237.158:5080/WebRTCAppEE/websocket',
+    'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
   );
-  const [textnameplayer, onChangeTextNamePlayer] = useState('streamTest1');
+  const [textnameplayer, onChangeTextNamePlayer] = useState('batman1');
   const [textplayer, onChangeTextPlayer] = useState(
-    'ws://34.236.237.158:5080/WebRTCAppEE/websocket',
+    'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
   );
   useEffect(() => {
     requestCameraPermission();

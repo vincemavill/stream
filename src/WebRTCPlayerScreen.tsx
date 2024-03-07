@@ -6,31 +6,29 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Text,
-  TextInput
+  TextInput,
 } from 'react-native';
 import {useAntMedia, rtc_view} from '@antmedia/react-native-ant-media';
 
-export default function App({navigation,route}) {
+export default function App({navigation, route}) {
   var defaultStreamName = route.params.stream_name;
   // const webSocketUrl = 'ws://server.huvr.com:5080/WebRTCAppEE/websocket';
   // const webSocketUrl = 'ws://34.236.237.158:5080/WebRTCAppEE/websocket';
   //or webSocketUrl: 'wss://server.com:5443/WebRTCAppEE/websocket',
   const webSocketUrl = route.params.player_url;
-  
 
   const streamNameRef = useRef<string>(defaultStreamName);
   const [remoteMedia, setRemoteStream] = useState<string>('');
   const [isPlaying, setIsPlaying] = useState(false);
-
-
+  const [status, setStatus] = useState('status');
 
   const adaptor = useAntMedia({
     url: webSocketUrl,
     mediaConstraints: {
       audio: true,
       video: {
-        width: 1920,
-        height: 1080,
+        width: 640,
+        height: 480,
         frameRate: 30,
         facingMode: 'front', // front or  environment
       },
@@ -40,20 +38,22 @@ export default function App({navigation,route}) {
         case 'pong':
           break;
         case 'play_started':
+          setStatus('play_started');
           console.log('play_started');
           setIsPlaying(true);
           break;
         case 'play_finished':
+          setStatus('play_finished');
           console.log('play_finished');
-          
           setIsPlaying(false);
           setRemoteStream('');
-        break;
-        case "newStreamAvailable": 
-        if(data.streamId == streamNameRef.current)
-          setRemoteStream(data.stream.toURL());
-        break;
+          break;
+        case 'newStreamAvailable':
+          if (data.streamId == streamNameRef.current)
+              setRemoteStream(data.stream.toURL());
+          break;
         default:
+          setStatus(command);
           console.log(command);
           break;
       }
@@ -71,8 +71,6 @@ export default function App({navigation,route}) {
     },
     debug: true,
   });
-
-
 
   const handlePlay = useCallback(() => {
     if (!adaptor) {
@@ -111,12 +109,16 @@ export default function App({navigation,route}) {
             </TouchableOpacity>
           </>
         )}
-         <>
-            <TouchableOpacity onPress={()=>{
+
+        <Text style={{textAlign: 'center', marginBottom:20}}>{status}</Text>
+        <>
+          <TouchableOpacity
+            onPress={() => {
               navigation.goBack();
-            }} style={styles.button}>
-              <Text>Go Back</Text>
-            </TouchableOpacity>
+            }}
+            style={styles.button}>
+            <Text>Go Back</Text>
+          </TouchableOpacity>
         </>
       </View>
     </SafeAreaView>

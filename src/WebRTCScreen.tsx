@@ -23,7 +23,7 @@ export default function App({navigation, route}) {
   const streamNameRef = useRef<string>(defaultStreamName);
   const [localMedia, setLocalMedia] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
-
+  const [status, setStatus] = useState("status");
 
   let localStream: any = useRef(null);
 
@@ -48,10 +48,12 @@ export default function App({navigation, route}) {
         case 'pong':
           break;
         case 'publish_started':
+          setStatus('publish_started');
           console.log('publish_started');
           setIsPlaying(true);
           break;
         case 'publish_finished':
+          setStatus('publish_finished');
           console.log('publish_finished');
           InCallManager.stop();
           setIsPlaying(false);
@@ -63,11 +65,12 @@ export default function App({navigation, route}) {
     },
     callbackError: (err: any, data: any) => {
       console.error('callbackError', err, data);
+      alert(err);
     },
     peer_connection_config: {
       iceServers: [
         {
-          url: 'stun:stun.l.google.com:19302',
+          urls: 'stun:stun.l.google.com:19302',
         },
       ],
     },
@@ -153,6 +156,7 @@ export default function App({navigation, route}) {
               <Text>Go Back</Text>
             </TouchableOpacity>
         </>
+        <Text style={{textAlign: "center"}}>{status}</Text>
       </View>
     </SafeAreaView>
   );
