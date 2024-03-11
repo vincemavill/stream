@@ -1,305 +1,178 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-import React, {useState, useEffect, useRef, useContext} from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useCallback, useRef, useState, useEffect} from 'react';
+
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
   View,
-  TextInput,
-  Button,
-  PermissionsAndroid,
-  Switch,
-  Keyboard,
+  SafeAreaView,
   TouchableOpacity,
-  Platform,
-  Dimensions,
-  KeyboardAvoidingView,
+  Text,
 } from 'react-native';
-import {
-  ScreenCapturePickerView,
-  RTCPeerConnection,
-  RTCIceCandidate,
-  RTCSessionDescription,
-  RTCView,
-  MediaStream,
-  MediaStreamTrack,
-  mediaDevices,
-  registerGlobals,
-} from 'react-native-webrtc';
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import {VLCPlayer, VlCPlayerView} from 'react-native-vlc-media-player';
-// import {NodeCameraView} from 'react-native-nodemediaclient';
-// import {NodeCameraView} from 'nodemedia-client-with-zoom';
-// import RTMPPublisher from 'react-native-rtmp-publisher';
-import RTMPPublisher from 'react-native-publisher';
-function App({route, navigation}): React.JSX.Element {
-  const publisherRef = useRef();
-  const [isEnabled, setIsEnabled] = useState(true);
-  const toggleSwitch = () => setIsEnabled(!isEnabled);
-  const [publisher, setPublisher] = useState();
-  const [refresher, setRefresher] = useState(true);
-  const [textpublisher, onChangeTextPublisher] = useState(
-    'http://localhost:3016/broadcast?id=31f4b6df-76c4-43e7-9af8-hahaha&name=User-5714',
-  );
-  const [textsubscriber, onChangeTextSubscriber] = useState('');
-  const [resetpublisher, setResetPublisher] = useState(true);
-  const [resetsubscriber, setResetSubscriber] = useState(true);
-  const [camera, setCamera] = useState(1);
-  const [zoom, setZoom] = useState(0.0);
-  const [mute, setMute] = useState(false);
-  const [audioType, setAudioType] = useState('SPEAKER');
-  const [status_value, setStatus] = useState('haha');
-  useEffect(() => {}, []);
-  const handleResetPub = () => {
-    Keyboard.dismiss();
-    setResetPublisher(false);
-    setTimeout(() => {
-      setResetPublisher(true);
-    }, 1000);
-    setTimeout(async () => {
-      if (publisherRef.current) {
-        // publisherRef.current.start();
-        // publisherRef.current.startStream();
-        await publisherRef.current.startStream();
-        await publisherRef.current.setAudioInput('SPEAKER');
+import {useAntMedia, rtc_view} from '@antmedia/react-native-ant-media';
+
+import InCallManager from 'react-native-incall-manager';
+
+export default function App({navigation,route}) {
+  // var defaultStreamName = 'streamTest1';
+  // const webSocketUrl = 'ws://server.com:5080/WebRTCAppEE/websocket';
+  //or webSocketUrl: 'wss://server.com:5443/WebRTCAppEE/websocket',
+
+  var defaultStreamName = route.params.stream_name;;
+  const webSocketUrl = route.params.player_url;
+
+
+  const streamNameRef = useRef<string>(defaultStreamName);
+  const [localMedia, setLocalMedia] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [status, setStatus] = useState("status");
+  
+
+
+  let localStream: any = useRef(null);
+
+  useEffect(() => {
+    console.log(' localStream.current ', localStream.current);
+  }, []);
+
+  const adaptor = useAntMedia({
+    url: webSocketUrl,
+    mediaConstraints: {
+      audio: true,
+      video: {
+        width: 640,
+        height: 480,
+        frameRate: 30,
+        facingMode: 'front',
+      },
+    },
+    callback(command: any, data: any) {
+      setStatus(command)
+      switch (command) {
+        case 'pong':
+          break;
+        case 'publish_started':
+          console.log('publish_started');
+          setIsPlaying(true);
+          break;
+        case 'publish_finished':
+          console.log('publish_finished');
+          InCallManager.stop();
+          setIsPlaying(false);
+          break;
+        default:
+          console.log(command);
+          break;
       }
-    }, 1500);
-  };
-  const handleStopStream = async () => {
-    if (publisherRef.current) {
-      await publisherRef.current.stopStream();
-    }
-  };
-  const handleReconnect = async () => {
-    if (publisherRef.current) {
-      await publisherRef.current.startStream();
-    }
-  };
-  // -------------------------------------------
-  const isDarkMode = useColorScheme() === 'dark';
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-  const handleSound = async () => {
-    if (publisherRef.current) {
-      if (audioType === 'SPEAKER') {
-        setAudioType('BLUETOOTH_HEADSET');
-        await publisherRef.current.setAudioInput('BLUETOOTH_HEADSET');
-      } else if (audioType === 'BLUETOOTH_HEADSET') {
-        setAudioType('WIRED_HEADSET');
-        await publisherRef.current.setAudioInput('WIRED_HEADSET');
-      } else if (audioType === 'WIRED_HEADSET') {
-        setAudioType('SPEAKER');
-        await publisherRef.current.setAudioInput('SPEAKER');
+    },
+    callbackError: (err: any, data: any) => {
+      setStatus(err)
+      console.error('callbackError', err, data);
+    },
+    peer_connection_config: {
+      iceServers: [
+        {
+          url: 'stun:stun.l.google.com:19302',
+        },
+      ],
+    },
+    debug: true,
+  });
+
+  useEffect(() => {
+    const verify = () => {
+      console.log('in verify');
+
+      if (adaptor.localStream.current && adaptor.localStream.current.toURL()) {
+        console.log('in verify if adaptor local stream', adaptor.localStream);
+
+        console.log(
+          'localStream.current.toURL()',
+          adaptor.localStream.current.toURL(),
+        );
+
+        return setLocalMedia(adaptor.localStream.current.toURL());
       }
+      setTimeout(verify, 5000);
+    };
+    verify();
+  }, [adaptor.localStream]);
+
+  useEffect(() => {
+    if (localMedia) {
+      InCallManager.start({media: 'video'});
     }
-  };
+  }, [localMedia]);
+
+  const handlePublish = useCallback(() => {
+    if (!adaptor) {
+      return;
+    }
+
+    adaptor.publish(streamNameRef.current);
+  }, [adaptor]);
+
+  const handleStop = useCallback(() => {
+    if (!adaptor) {
+      return;
+    }
+    adaptor.stop(streamNameRef.current);
+  }, [adaptor]);
+
   return (
-    <KeyboardAvoidingView
-      bg="white"
-      flex={1}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      {/* <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'} 
-        backgroundColor={backgroundStyle.backgroundColor}
-      /> */}
-      {resetpublisher ? (
-        <View style={{flex: 1, alignItems: 'center'}}>
-          <RTMPPublisher
-            style={{
-              height: '100%',
-              width: Platform.OS === 'ios' ? '100%' : '115%',
-            }}
-            ref={publisherRef}
-            // streamURL="rtmp://your-publish-url"
-            videoSettings={route.params.videosettings}
-            // videoSettings={{
-            //   width: 1080,
-            //   height: 1920,
-            //   bitrate: 1500000,
-            //   audioBitrate: 128000,
-            // }}
-            allowedVideoOrientations={[
-              'portrait',
-              'landscapeLeft',
-              'landscapeRight',
-              // "portraitUpsideDown"
-            ]}
-            videoOrientation="portrait"
-            AudioInputType="speaker"
-            streamURL={textpublisher}
-            streamName=""
-            onConnectionFailedRtmp={() => {
-              handleReconnect();
-            }}
-            onConnectionStartedRtmp={() => {}}
-            onConnectionSuccessRtmp={() => {}}
-            onDisconnectRtmp={() => {
-              // handleReconnect()
-            }}
-            onNewBitrateRtmp={() => {}}
-            onStreamStateChanged={(status: any) => {
-              console.log(status);
-              setStatus(status);
-            }}
-          />
-        </View>
-      ) : (
-        <View style={{height: '100%', width: '100%'}}></View>
-      )}
-      <View style={{position: 'absolute', zIndex: 1, top: 50, width: '100%'}}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Text
-            style={{
-              fontSize: 15,
-              fontWeight: 'bold',
-              padding: 5,
-              textAlign: 'center',
-              color: '#FF0000',
-            }}>
-            GO BACK
-          </Text>
-        </TouchableOpacity>
-        <TextInput
-          style={{
-            height: 40,
-            margin: 12,
-            borderWidth: 1,
-            padding: 10,
-            backgroundColor: '#fff',
-            color: '#000',
-          }}
-          onChangeText={onChangeTextPublisher}
-          value={textpublisher}
-          placeholder="rtmp://rtmp.huvr.com/live/example?secret=huvr"
-        />
-        <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-          <View style={{marginHorizontal: 12, marginBottom: 12, width: 100}}>
-            <Button
-              onPress={() => {
-                handleResetPub();
-              }}
-              title={'publish'}
-              color="#841584"
-            />
-          </View>
-          <View style={{marginHorizontal: 12, marginBottom: 12, width: 100}}>
-            <Button
-              onPress={() => {
-                handleStopStream();
-              }}
-              title={'stop'}
-              color="#FF0000"
-            />
-          </View>
-        </View>
-        <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.box}>
+        <Text style={styles.heading}>Ant Media WebRTC Publish</Text>
+        {localMedia ? <>{rtc_view(localMedia, styles.streamPlayer)}</> : <></>}
+        {!isPlaying ? (
+          <>
+            <TouchableOpacity onPress={handlePublish} style={styles.button}>
+              <Text>Start Publishing</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <TouchableOpacity onPress={handleStop} style={styles.button}>
+              <Text>Stop Publishing</Text>
+            </TouchableOpacity>
+          </>
+        )}
+        <>
           <TouchableOpacity
             onPress={() => {
-              if (publisherRef.current) {
-                publisherRef.current.switchCamera();
-              }
-            }}>
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: 'bold',
-                padding: 5,
-                textAlign: 'center',
-                color: '#FF0000',
-              }}>
-              SWITCH CAMERA
-            </Text>
+              navigation.goBack();
+            }}
+            style={styles.button}>
+            <Text>Go Back</Text>
           </TouchableOpacity>
-          <Text
-            style={{
-              fontSize: 15,
-              fontWeight: 'bold',
-              padding: 5,
-              textAlign: 'center',
-              color: '#fff',
-            }}>
-            {'    '}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              if (mute) {
-                setMute(false);
-                publisherRef.current.unmute();
-              } else {
-                setMute(true);
-                publisherRef.current.mute();
-              }
-            }}>
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: 'bold',
-                padding: 5,
-                textAlign: 'center',
-                color: '#FF0000',
-              }}>
-              {mute ? 'UNMUTE' : 'MUTE'}
-            </Text>
-          </TouchableOpacity>
-          {/* <Text
-            style={{
-              fontSize: 15,
-              fontWeight: 'bold',
-              padding: 5,
-              textAlign: 'center',
-              color: '#fff',
-            }}>
-            {'    '}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              handleSound();
-            }}>
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: 'bold',
-                padding: 5,
-                textAlign: 'center',
-                color: '#FF0000',
-              }}>
-              {audioType}
-            </Text>
-          </TouchableOpacity> */}
-        </View>
+        </>
+        <Text style={styles.heading}>{status}</Text>
       </View>
-      <View style={{position: 'absolute', zIndex: 1, bottom: 0}}>
-        <Text
-          style={{
-            fontSize: 15,
-            fontWeight: 'bold',
-            padding: 5,
-            textAlign: 'center',
-            color: '#FF0000',
-          }}>
-          {status_value}
-        </Text>
-      </View>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
-export default App;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  box: {
+    alignSelf: 'center',
+    width: '80%',
+    height: '80%',
+  },
+  streamPlayer: {
+    width: '100%',
+    height: '80%',
+    alignSelf: 'center',
+  },
+  button: {
+    alignItems: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10,
+    marginBottom: 10,
+  },
+  heading: {
+    alignSelf: 'center',
+  },
+});

@@ -53,13 +53,27 @@ function App({navigation}): React.JSX.Element {
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
 
-  const [textname, onChangeTextName] = useState('streamTest1');
+  const [textname, onChangeTextName] = useState('helloworld1');
   const [textpublisher, onChangeTextPublisher] = useState(
+    // 'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
     'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
+    // 'https://server.huvr.com:5443/WebRTCAppEE/conference.html'
   );
-  const [textnameplayer, onChangeTextNamePlayer] = useState('batman1');
+  // --------------------------------------------------------
+  const [textnameconference, onChangeTextNameConference] =
+    useState('helloworld1');
+  const [textconference, onChangeTextConference] = useState(
+    // 'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
+    'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
+    // 'https://server.huvr.com:5443/WebRTCAppEE/conference.html'
+  );
+  const [textnameconferencestreamid, onChangeTextNameConferenceStreamId] =
+    useState('huvr_stream_id_123');
+  // --------------------------------------------------------
+  const [textnameplayer, onChangeTextNamePlayer] = useState('helloworld1');
   const [textplayer, onChangeTextPlayer] = useState(
     'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
+    // 'https://server.huvr.com:5443/WebRTCAppEE/play.html?id=vince1&playOrder=webrtc&mute=false&playType=webm',
   );
   useEffect(() => {
     requestCameraPermission();
@@ -103,7 +117,7 @@ function App({navigation}): React.JSX.Element {
       flex={1}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View>
-        <View style={{marginTop: '30%'}}>
+        <View style={{marginTop: '10%'}}>
           <Text
             style={{
               fontSize: 30,
@@ -133,7 +147,7 @@ function App({navigation}): React.JSX.Element {
               }}
               onChangeText={onChangeTextName}
               value={textname}
-              placeholder="Stream Name"
+              placeholder="Room Name"
             />
             <View style={{padding: 5}}></View>
             <TextInput
@@ -152,9 +166,9 @@ function App({navigation}): React.JSX.Element {
             <View style={{padding: 5}}></View>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('WebRTCS', {
-                  "stream_name" : textname ,
-                  "player_url": textpublisher,
+                navigation.navigate('Publisher', {
+                  stream_name: textname,
+                  player_url: textpublisher,
                 });
               }}>
               <Text
@@ -166,6 +180,76 @@ function App({navigation}): React.JSX.Element {
                   color: '#FF0000',
                 }}>
                 PROCEED TO PUBLISHER
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{paddingVertical: 20}}></View>
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: '#000',
+              margin: 10,
+              padding: 10,
+            }}>
+            <TextInput
+              style={{
+                height: 40,
+                // margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+                color: '#000',
+              }}
+              onChangeText={onChangeTextName}
+              value={textname}
+              placeholder="Room Name"
+            />
+            <View style={{padding: 5}}></View>
+            <TextInput
+              style={{
+                height: 40,
+                // margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+                color: '#000',
+              }}
+              onChangeText={onChangeTextConference}
+              value={textconference}
+              placeholder="ws://"
+            />
+            <View style={{padding: 5}}></View>
+            <TextInput
+              style={{
+                height: 40,
+                // margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+                color: '#000',
+              }}
+              onChangeText={onChangeTextNameConferenceStreamId}
+              value={textnameconferencestreamid}
+              placeholder="Stream ID"
+            />
+            <View style={{padding: 5}}></View>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Conference', {
+                  stream_name: textnameconference,
+                  player_url: textconference,
+                  stream_id: textnameconferencestreamid,
+                });
+              }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  padding: 5,
+                  textAlign: 'center',
+                  color: '#FF0000',
+                }}>
+                PROCEED TO CONFERENCE
               </Text>
             </TouchableOpacity>
           </View>
@@ -202,14 +286,14 @@ function App({navigation}): React.JSX.Element {
               }}
               onChangeText={onChangeTextPlayer}
               value={textplayer}
-              placeholder="ws://"
+              placeholder=""
             />
             <View style={{padding: 5}}></View>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('WebRTCPlayer', {
-                  "stream_name" : textnameplayer ,
-                  "player_url": textplayer,
+                  stream_name: textnameplayer,
+                  player_url: textplayer,
                 });
               }}>
               <Text

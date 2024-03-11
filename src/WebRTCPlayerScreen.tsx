@@ -9,6 +9,8 @@ import {
   TextInput,
 } from 'react-native';
 import {useAntMedia, rtc_view} from '@antmedia/react-native-ant-media';
+import {VLCPlayer, VlCPlayerView} from 'react-native-vlc-media-player';
+import {WebView} from 'react-native-webview';
 
 export default function App({navigation, route}) {
   var defaultStreamName = route.params.stream_name;
@@ -34,6 +36,7 @@ export default function App({navigation, route}) {
       },
     },
     callback(command: any, data: any) {
+      setStatus(command);
       switch (command) {
         case 'pong':
           break;
@@ -50,17 +53,19 @@ export default function App({navigation, route}) {
           break;
         case 'newStreamAvailable':
           if (data.streamId == streamNameRef.current)
-              setRemoteStream(data.stream.toURL());
+            setRemoteStream(data.stream.toURL());
+            // setRemoteStream(streamNameRef.current.toURL());
+            // console.log("streamNameRef.current-------------------");
+            // console.log(data);
           break;
         default:
-          setStatus(command);
           console.log(command);
           break;
       }
     },
     callbackError: (err: any, data: any) => {
       console.error('callbackError', err, data);
-      alert(err);
+      setStatus(err);
     },
     peer_connection_config: {
       iceServers: [
@@ -91,26 +96,71 @@ export default function App({navigation, route}) {
     <SafeAreaView style={styles.container}>
       <View style={styles.box}>
         <Text style={styles.heading}>Ant Media WebRTC Play</Text>
-        {!isPlaying ? (
-          <>
-            <TouchableOpacity onPress={handlePlay} style={styles.startButton}>
-              <Text>Start Playing</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-            {remoteMedia ? (
-              <>{rtc_view(remoteMedia, styles.streamPlayer)}</>
-            ) : (
-              <></>
-            )}
-            <TouchableOpacity onPress={handleStop} style={styles.button}>
-              <Text>Stop Playing</Text>
-            </TouchableOpacity>
-          </>
-        )}
 
-        <Text style={{textAlign: 'center', marginBottom:20}}>{status}</Text>
+        {
+          !isPlaying ? (
+            <>
+              <TouchableOpacity onPress={handlePlay} style={styles.startButton}>
+                <Text>Start Playing</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              {remoteMedia ? (
+                <>{rtc_view(remoteMedia, styles.streamPlayer)}</>
+              ) : (
+                <></>
+              )}
+              <TouchableOpacity onPress={handleStop} style={styles.button}>
+                <Text>Stop Playing</Text>
+              </TouchableOpacity>
+            </>
+          )
+        }
+        {
+        // webSocketUrl ? (
+          // <WebView
+          //   originWhitelist={['*']}
+          //   source={{uri: webSocketUrl}}
+          //   onLoadProgress={({ nativeEvent }) => {
+          //     // this.loadingProgress = nativeEvent.progress;
+          //     // console.log(nativeEvent.progress)
+          //     // if(nativeEvent.progress === 1){
+          //     //   alert("yes");
+          //     // }
+          //   }}
+          //   onLoad={syntheticEvent => {
+          //     // alert("load");
+          //   }}
+          //   onLoadStart={(syntheticEvent) => {
+          //     // const { nativeEvent } = syntheticEvent;
+          //     // console.warn(
+          //     //   'WebView received error status code: ',
+          //     //   nativeEvent.statusCode,
+          //     // );
+          //     // alert("load");
+          //   }}
+          //   style={{flex: 1}}
+          // />
+          
+        //   <VLCPlayer
+        //   // style={{height: '100%', width: '100%', zIndex: 100}}
+        //   style={{flex: 1}}
+        //   // videoAspectRatio="16:9"
+        //   // source={{uri: 'https://rtmp.huvr.com/live/vince.flv'}}
+        //   source={{uri: "https://server.huvr.com:5443/WebRTCAppEE/play.html?id=vince1&mute=false"}}
+        //   // resizeMode="fill"
+        //   autoAspectRatio={true}
+        //   ref={v => {
+        //     // console.log(v);
+        //   }}
+        //   // muted={mute}
+        //   playInBackground={true}
+        // />
+        // ) : null
+        }
+
+         <Text style={{textAlign: 'center', marginBottom:20}}>{status}</Text> 
         <>
           <TouchableOpacity
             onPress={() => {
