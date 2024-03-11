@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@antmedia/react-native-ant-media": "^1.0.6",
+    "@antmedia/react-native-ant-media": "1.0.5",
     "@react-navigation/native": "^6.1.10",
     "@react-navigation/native-stack": "^6.9.18",
     "react": "18.2.0",

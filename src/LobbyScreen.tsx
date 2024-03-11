@@ -129,7 +129,7 @@ function App({navigation}): React.JSX.Element {
             REACT NATIVE ANT MEDIA
           </Text>
           <View style={{paddingVertical: 20}}></View>
-          <View
+          {/* <View
             style={{
               borderWidth: 1,
               borderColor: '#000',
@@ -183,7 +183,7 @@ function App({navigation}): React.JSX.Element {
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={{paddingVertical: 20}}></View>
+          <View style={{paddingVertical: 20}}></View> */}
           <View
             style={{
               borderWidth: 1,
@@ -200,8 +200,8 @@ function App({navigation}): React.JSX.Element {
                 backgroundColor: '#fff',
                 color: '#000',
               }}
-              onChangeText={onChangeTextName}
-              value={textname}
+              onChangeText={onChangeTextNameConference}
+              value={textnameconference}
               placeholder="Room Name"
             />
             <View style={{padding: 5}}></View>
@@ -219,7 +219,7 @@ function App({navigation}): React.JSX.Element {
               placeholder="ws://"
             />
             <View style={{padding: 5}}></View>
-            <TextInput
+            {/* <TextInput
               style={{
                 height: 40,
                 // margin: 12,
@@ -232,7 +232,7 @@ function App({navigation}): React.JSX.Element {
               value={textnameconferencestreamid}
               placeholder="Stream ID"
             />
-            <View style={{padding: 5}}></View>
+            <View style={{padding: 5}}></View> */}
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('Conference', {
