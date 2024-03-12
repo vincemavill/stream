@@ -53,24 +53,34 @@ function App({navigation}): React.JSX.Element {
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
 
-  const [textname, onChangeTextName] = useState('helloworld1');
-  const [textpublisher, onChangeTextPublisher] = useState(
-    // 'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
-    'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
-    // 'https://server.huvr.com:5443/WebRTCAppEE/conference.html'
-  );
+  // const [textname, onChangeTextName] = useState('apple1');
+  // const [textpublisher, onChangeTextPublisher] = useState(
+  //   // 'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
+  //   'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
+  //   // 'https://server.huvr.com:5443/WebRTCAppEE/conference.html'
+  // );
   // --------------------------------------------------------
   const [textnameconference, onChangeTextNameConference] =
-    useState('helloworld1');
+    useState('apple1');
   const [textconference, onChangeTextConference] = useState(
     // 'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
     'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
     // 'https://server.huvr.com:5443/WebRTCAppEE/conference.html'
   );
-  const [textnameconferencestreamid, onChangeTextNameConferenceStreamId] =
-    useState('huvr_stream_id_123');
+  // const [textnameconferencestreamid, onChangeTextNameConferenceStreamId] =
+  //   useState('huvr_stream_id_123');
   // --------------------------------------------------------
-  const [textnameplayer, onChangeTextNamePlayer] = useState('helloworld1');
+  const [textnameconferencesubs, onChangeTextNameConferenceSubs] =
+    useState('apple1');
+  const [textconferencesubs, onChangeTextConferenceSubs] = useState(
+    // 'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
+    'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
+    // 'https://server.huvr.com:5443/WebRTCAppEE/conference.html'
+  );
+  // const [textnameconferencestreamid, onChangeTextNameConferenceStreamId] =
+  //   useState('huvr_stream_id_123');
+  // --------------------------------------------------------
+  const [textnameplayer, onChangeTextNamePlayer] = useState('apple1');
   const [textplayer, onChangeTextPlayer] = useState(
     'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
     // 'https://server.huvr.com:5443/WebRTCAppEE/play.html?id=vince1&playOrder=webrtc&mute=false&playType=webm',
@@ -114,9 +124,9 @@ function App({navigation}): React.JSX.Element {
   return (
     <KeyboardAvoidingView
       bg="white"
-      flex={1}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <View>
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled>
+      <ScrollView>
         <View style={{marginTop: '10%'}}>
           <Text
             style={{
@@ -219,7 +229,35 @@ function App({navigation}): React.JSX.Element {
               placeholder="ws://"
             />
             <View style={{padding: 5}}></View>
-            {/* <TextInput
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Conference', {
+                  stream_name: textnameconference,
+                  player_url: textconference,
+                  // stream_id: textnameconferencestreamid,
+                });
+              }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  padding: 5,
+                  textAlign: 'center',
+                  color: '#FF0000',
+                }}>
+                PROCEED TO PUBLISHER CONFERENCE
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{paddingVertical: 20}}></View>
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: '#000',
+              margin: 10,
+              padding: 10,
+            }}>
+            <TextInput
               style={{
                 height: 40,
                 // margin: 12,
@@ -228,32 +266,47 @@ function App({navigation}): React.JSX.Element {
                 backgroundColor: '#fff',
                 color: '#000',
               }}
-              onChangeText={onChangeTextNameConferenceStreamId}
-              value={textnameconferencestreamid}
-              placeholder="Stream ID"
+              onChangeText={onChangeTextNameConferenceSubs}
+              value={textnameconferencesubs}
+              placeholder="Room Name"
             />
-            <View style={{padding: 5}}></View> */}
+            <View style={{padding: 5}}></View>
+            <TextInput
+              style={{
+                height: 40,
+                // margin: 12,
+                borderWidth: 1,
+                padding: 10,
+                backgroundColor: '#fff',
+                color: '#000',
+              }}
+              onChangeText={onChangeTextConferenceSubs}
+              value={textconferencesubs}
+              placeholder="ws://"
+            />
+            <View style={{padding: 5}}></View>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('Conference', {
-                  stream_name: textnameconference,
-                  player_url: textconference,
-                  stream_id: textnameconferencestreamid,
+                navigation.navigate('ConferenceSubs', {
+                  stream_name: textnameconferencesubs,
+                  player_url: textconferencesubs,
+                  // stream_id: textnameconferencestreamid,
                 });
               }}>
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: 'bold',
                   padding: 5,
                   textAlign: 'center',
                   color: '#FF0000',
                 }}>
-                PROCEED TO CONFERENCE
+                PROCEED TO SUBSCRIBER CONFERENCE
               </Text>
             </TouchableOpacity>
           </View>
           <View style={{paddingVertical: 20}}></View>
+
           <View
             style={{
               borderWidth: 1,
@@ -298,18 +351,18 @@ function App({navigation}): React.JSX.Element {
               }}>
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: 'bold',
                   padding: 5,
                   textAlign: 'center',
                   color: '#FF0000',
                 }}>
-                PROCEED TO PLAYER
+                PROCEED TO SUBSCRIBER PLAYER
               </Text>
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

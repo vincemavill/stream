@@ -37,15 +37,7 @@ export default function Conference({navigation, route}) {
 
   const adaptor = useAntMedia({
     url: webSocketUrl,
-    mediaConstraints: {
-      audio: true,
-      video: {
-        width: 1080,
-        height: 1920,
-        frameRate: 30,
-        facingMode: 'front',
-      },
-    },
+    mediaConstraints: false,
     callback(command: any, data: any) {
       setStatus(command)
       switch (command) {
@@ -199,7 +191,8 @@ export default function Conference({navigation, route}) {
 
   useEffect(() => {
     if (localMedia && remoteStreams) {
-      InCallManager.start({media: 'audio'});
+      InCallManager.start({media: 'video'});
+      InCallManager.setForceSpeakerphoneOn(true);
     }
   }, [localMedia, remoteStreams]);
 
@@ -255,15 +248,10 @@ export default function Conference({navigation, route}) {
           </>
         ) : (
           <>
-            {/* <Text style={styles.heading1}>Remote Streams</Text>
+            <Text style={styles.heading1}>Remote Streams</Text>
             {remoteStreams.length <= 3 ? (
               <>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignSelf: 'center',
-                    margin: 5,
-                  }}>
+          
                   {remoteStreams.map((a, index) => {
                     const count = remoteStreams.length;
                     console.log('count', count);
@@ -275,11 +263,11 @@ export default function Conference({navigation, route}) {
                         </View>
                       );
                   })}
-                </View>
+                
               </>
             ) : (
               <></>
-            )} */}
+            )}
             <TouchableOpacity style={styles.button} onPress={handleDisconnect}>
               <Text style={styles.btnTxt}>Leave Room</Text>
             </TouchableOpacity>
@@ -326,8 +314,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     margin: 5,
-    width: 100,
-    height: 150,
+    // width: 100,
+    width: '100%',
+    // height: 150,
+    height: "60%",
     justifyContent: 'center',
     alignSelf: 'center',
   },

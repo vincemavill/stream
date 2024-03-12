@@ -56,6 +56,7 @@ import SubscriberScreen from './src/SubscriberScreen';
 import WebRTCScreen from './src/WebRTCScreen';
 import WebRTCPlayerScreen from './src/WebRTCPlayerScreen';
 import ConferenceScreen from './src/ConferenceScreen';
+import ConferenceSubsScreen from './src/ConferenceSubsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -69,6 +70,7 @@ function App(): React.JSX.Element {
         <Stack.Screen name="WebRTCS" component={WebRTCScreen} options={{ headerShown: false }} />
         <Stack.Screen name="WebRTCPlayer" component={WebRTCPlayerScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Conference" component={ConferenceScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ConferenceSubs" component={ConferenceSubsScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
