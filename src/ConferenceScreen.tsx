@@ -85,7 +85,7 @@ export default function Conference({navigation, route}) {
           setIsPublishing(false);
           break;
         case 'streamJoined':
-          adaptor.play(data.streamId, room_name_stream_id, roomId);
+          adaptor.play(data.streamId, undefined, roomId);
           break;
         case 'leavedFromRoom':
           console.log('leavedFromRoom');
@@ -255,7 +255,7 @@ export default function Conference({navigation, route}) {
           </>
         ) : (
           <>
-            {/* <Text style={styles.heading1}>Remote Streams</Text>
+            {/* <Text style={styles.heading1}>Remote Streams</Text> */}
             {remoteStreams.length <= 3 ? (
               <>
                 <View
@@ -267,7 +267,6 @@ export default function Conference({navigation, route}) {
                   {remoteStreams.map((a, index) => {
                     const count = remoteStreams.length;
                     console.log('count', count);
-
                     if (a)
                       return (
                         <View key={index}>
@@ -279,7 +278,7 @@ export default function Conference({navigation, route}) {
               </>
             ) : (
               <></>
-            )} */}
+            )}
             <TouchableOpacity style={styles.button} onPress={handleDisconnect}>
               <Text style={styles.btnTxt}>Leave Room</Text>
             </TouchableOpacity>
@@ -323,13 +322,14 @@ const styles = StyleSheet.create({
   },
   players: {
     backgroundColor: '#DDDDDD',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
     margin: 5,
-    width: 100,
-    height: 150,
+    width: 0,
+    height: 0,
     justifyContent: 'center',
     alignSelf: 'center',
+
   },
   localPlayer: {
     backgroundColor: '#DDDDDD',
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDDDDD',
     padding: 10,
     width: '100%',
-    marginTop: 20,
+    marginTop: 10,
   },
   heading: {
     alignSelf: 'center',

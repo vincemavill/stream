@@ -77,7 +77,7 @@ export default function Conference({navigation, route}) {
           setIsPublishing(false);
           break;
         case 'streamJoined':
-          adaptor.play(data.streamId, room_name_stream_id, roomId);
+          adaptor.play(data.streamId, undefined, roomId);
           break;
         case 'leavedFromRoom':
           console.log('leavedFromRoom');
@@ -148,7 +148,7 @@ export default function Conference({navigation, route}) {
 
   const handleConnect = useCallback(() => {
     if (adaptor) {
-      adaptor.joinRoom(roomId, room_name_stream_id);
+      adaptor.joinRoom(roomId, undefined);
       setIsPlaying(true);
     }
   }, [adaptor, roomId]);
@@ -251,11 +251,9 @@ export default function Conference({navigation, route}) {
             <Text style={styles.heading1}>Remote Streams</Text>
             {remoteStreams.length <= 3 ? (
               <>
-          
                   {remoteStreams.map((a, index) => {
                     const count = remoteStreams.length;
-                    console.log('count', count);
-
+                    // console.log('count', count);
                     if (a)
                       return (
                         <View key={index}>
@@ -263,7 +261,6 @@ export default function Conference({navigation, route}) {
                         </View>
                       );
                   })}
-                
               </>
             ) : (
               <></>
@@ -314,10 +311,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     margin: 5,
-    // width: 100,
-    width: '100%',
-    // height: 150,
-    height: "60%",
+    width: 100,
+    // width: '100%',
+    height: 150,
+    // height: "60%",
     justifyContent: 'center',
     alignSelf: 'center',
   },
