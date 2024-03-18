@@ -31,6 +31,7 @@ export default function Conference({navigation, route}) {
   const stream = useRef({id: ''}).current;
   let roomTimerId: any = useRef(0).current;
   let streamsList: any = useRef([]).current;
+  const [main_publisher, setMainPublisher] = useState<any>(null);
   const [PlayStreamsListArr, updatePlayStreamsListArr] = useState<any>([]);
 
   let allStreams: any = [];
@@ -181,7 +182,7 @@ export default function Conference({navigation, route}) {
     };
     verify();
   }, [adaptor.localStream]);
-
+  
   const handleSwitchCamera = () => {
     if (adaptor.localStream.current) {
       const videoTrack = adaptor.localStream.current.getVideoTracks()[0];
@@ -201,6 +202,8 @@ export default function Conference({navigation, route}) {
 
     if (adaptor && Object.keys(adaptor.remoteStreamsMapped).length > 0) {
       for (let i in adaptor.remoteStreamsMapped) {
+        // console.log("adaptor.remoteStreamsMapped[i]--------------------")
+        // console.log(adaptor.remoteStreamsMapped[i])
         let st =
           adaptor.remoteStreamsMapped[i] &&
           'toURL' in adaptor.remoteStreamsMapped[i]
@@ -209,6 +212,14 @@ export default function Conference({navigation, route}) {
 
         if (PlayStreamsListArr.includes(i)) {
           if (st) remoteStreamArr.push(st);
+        }
+
+        if(adaptor.remoteStreamsMapped[i]._tracks){
+          const checkmainpub = adaptor.remoteStreamsMapped[i]._tracks;
+          const gotit = checkmainpub.some((item) => item.kind === "video")
+          if(gotit){
+            setMainPublisher(st);
+          }
         }
       }
     }
@@ -221,6 +232,8 @@ export default function Conference({navigation, route}) {
 
     if (adaptor && Object.keys(adaptor.remoteStreamsMapped).length > 0) {
       for (let i in adaptor.remoteStreamsMapped) {
+        // console.log("adaptor.remoteStreamsMapped[i]--------------------")
+        // console.log(adaptor.remoteStreamsMapped[i]._tracks)
         let st =
           adaptor.remoteStreamsMapped[i] &&
           'toURL' in adaptor.remoteStreamsMapped[i]
@@ -229,6 +242,14 @@ export default function Conference({navigation, route}) {
 
         if (PlayStreamsListArr.includes(i)) {
           if (st) remoteStreamArr.push(st);
+        }
+
+        if(adaptor.remoteStreamsMapped[i]._tracks){
+          const checkmainpub = adaptor.remoteStreamsMapped[i]._tracks;
+          const gotit = checkmainpub.some((item) => item.kind === "video")
+          if(gotit){
+            setMainPublisher(st);
+          }
         }
       }
     }
@@ -253,11 +274,11 @@ export default function Conference({navigation, route}) {
               <>
                   {remoteStreams.map((a, index) => {
                     const count = remoteStreams.length;
-                    // console.log('count', count);
                     if (a)
+                  
                       return (
                         <View key={index}>
-                          <>{rtc_view(a, styles.players)}</>
+                          <>{rtc_view(a, a === main_publisher ? styles.ViewPlayers : styles.players)}</>
                         </View>
                       );
                   })}
@@ -306,14 +327,26 @@ const styles = StyleSheet.create({
     width: '90%',
     height: '90%',
   },
-  players: {
+  ViewPlayers: {
     backgroundColor: '#DDDDDD',
     paddingVertical: 5,
     paddingHorizontal: 10,
     margin: 5,
-    width: 100,
+    // width: 100,
+    width: '100%',
+    // height: 150,
+    height: "60%",
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  players: {
+    backgroundColor: '#DDDDDD',
+    // paddingVertical: 5,
+    // paddingHorizontal: 10,
+    margin: 5,
+    width: 0,
     // width: '100%',
-    height: 150,
+    height: 0,
     // height: "60%",
     justifyContent: 'center',
     alignSelf: 'center',
