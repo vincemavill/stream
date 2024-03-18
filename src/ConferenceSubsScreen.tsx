@@ -38,7 +38,10 @@ export default function Conference({navigation, route}) {
 
   const adaptor = useAntMedia({
     url: webSocketUrl,
-    mediaConstraints: false,
+    mediaConstraints: {
+      audio: true,
+      video: false
+    },
     callback(command: any, data: any) {
       setStatus(command)
       switch (command) {
@@ -355,7 +358,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDDDDD',
     borderRadius: 5,
     marginBottom: 5,
-    height: "70%",
+    height: 0,
     flexDirection: 'row',
   },
   btnTxt: {

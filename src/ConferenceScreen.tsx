@@ -200,6 +200,7 @@ export default function Conference({navigation, route}) {
   useEffect(() => {
     if (localMedia && remoteStreams) {
       InCallManager.start({media: 'audio'});
+      InCallManager.setForceSpeakerphoneOn(true);
     }
   }, [localMedia, remoteStreams]);
 
@@ -228,6 +229,8 @@ export default function Conference({navigation, route}) {
 
     if (adaptor && Object.keys(adaptor.remoteStreamsMapped).length > 0) {
       for (let i in adaptor.remoteStreamsMapped) {
+        console.log("adaptor.remoteStreamsMapped[i]--------------------------")
+        console.log(adaptor.remoteStreamsMapped[i])
         let st =
           adaptor.remoteStreamsMapped[i] &&
           'toURL' in adaptor.remoteStreamsMapped[i]
