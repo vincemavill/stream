@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@antmedia/react-native-ant-media": "1.0.5",
+    "@antmedia/react-native-ant-media": "^1.0.7",
     "@react-navigation/native": "^6.1.10",
     "@react-navigation/native-stack": "^6.9.18",
     "react": "18.2.0",
@@ -23,7 +23,7 @@
     "react-native-video": "^5.2.1",
     "react-native-video-player": "^0.14.0",
     "react-native-vlc-media-player": "^1.0.67",
-    "react-native-webrtc": "^118.0.2",
+    "react-native-webrtc": "^118.0.3",
     "react-native-webview": "^13.8.1",
     "socket.io-client": "^4.7.4"
   },
