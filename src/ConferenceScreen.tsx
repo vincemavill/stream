@@ -44,7 +44,9 @@ export default function Conference({navigation, route}) {
         height: 1920,
         frameRate: 30,
         facingMode: 'front',
+        // aspectRatio: 16/9 // landscape
       },
+      aspectRatio: 9/16 // portrait
     },
     callback(command: any, data: any) {
       setStatus(command)

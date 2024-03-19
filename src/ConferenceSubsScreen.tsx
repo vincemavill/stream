@@ -19,7 +19,7 @@ export default function Conference({navigation, route}) {
 
   var defaultRoomName = route.params.stream_name;
   const webSocketUrl = route.params.player_url;
-  var room_name_stream_id = route.params.stream_name + "huvrstreamid";
+  var room_name_stream_id = route.params.stream_name + 'huvrstreamid';
 
   const [localMedia, setLocalMedia] = useState('');
   const [remoteStreams, setremoteStreams] = useState<any>([]);
@@ -27,7 +27,7 @@ export default function Conference({navigation, route}) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [roomId, setRoomId] = useState(defaultRoomName);
-  const [status, setStatus] = useState("status");
+  const [status, setStatus] = useState('status');
   const stream = useRef({id: ''}).current;
   let roomTimerId: any = useRef(0).current;
   let streamsList: any = useRef([]).current;
@@ -40,10 +40,11 @@ export default function Conference({navigation, route}) {
     url: webSocketUrl,
     mediaConstraints: {
       audio: true,
-      video: false
+      video: false,
+      // aspectRatio: 9/16 // portrait
     },
     callback(command: any, data: any) {
-      setStatus(command)
+      setStatus(command);
       switch (command) {
         case 'pong':
           break;
@@ -132,7 +133,7 @@ export default function Conference({navigation, route}) {
     },
     callbackError: (err: any, data: any) => {
       // console.error('callbackError', err, data);
-      setStatus(err)
+      setStatus(err);
       clearRoomInfoInterval();
     },
     peer_connection_config: {
@@ -185,11 +186,25 @@ export default function Conference({navigation, route}) {
     };
     verify();
   }, [adaptor.localStream]);
-  
+
   const handleSwitchCamera = () => {
     if (adaptor.localStream.current) {
-      const videoTrack = adaptor.localStream.current.getVideoTracks()[0];
-      videoTrack._switchCamera();
+      const videoTrack = adaptor.localStream.current.();
+      videoTrack.
+    }
+  };
+
+  const handleMute = () => {
+    if (adaptor.localStream.current) {
+      const audioTrack = adaptor.localStream.current.getTracks()[0];
+      audioTrack._muted = true;
+    }
+  };
+
+  const handleUnMute = () => {
+    if (adaptor.localStream.current) {
+      const audioTrack = adaptor.localStream.current.getTracks()[0];
+      audioTrack._muted = false;
     }
   };
 
@@ -217,10 +232,10 @@ export default function Conference({navigation, route}) {
           if (st) remoteStreamArr.push(st);
         }
 
-        if(adaptor.remoteStreamsMapped[i]._tracks){
+        if (adaptor.remoteStreamsMapped[i]._tracks) {
           const checkmainpub = adaptor.remoteStreamsMapped[i]._tracks;
-          const gotit = checkmainpub.some((item) => item.kind === "video")
-          if(gotit){
+          const gotit = checkmainpub.some(item => item.kind === 'video');
+          if (gotit) {
             setMainPublisher(st);
           }
         }
@@ -247,10 +262,10 @@ export default function Conference({navigation, route}) {
           if (st) remoteStreamArr.push(st);
         }
 
-        if(adaptor.remoteStreamsMapped[i]._tracks){
+        if (adaptor.remoteStreamsMapped[i]._tracks) {
           const checkmainpub = adaptor.remoteStreamsMapped[i]._tracks;
-          const gotit = checkmainpub.some((item) => item.kind === "video")
-          if(gotit){
+          const gotit = checkmainpub.some(item => item.kind === 'video');
+          if (gotit) {
             setMainPublisher(st);
           }
         }
@@ -275,16 +290,22 @@ export default function Conference({navigation, route}) {
             <Text style={styles.heading1}>Remote Streams</Text>
             {remoteStreams.length <= 3 ? (
               <>
-                  {remoteStreams.map((a, index) => {
-                    const count = remoteStreams.length;
-                    if (a)
-                  
-                      return (
-                        <View key={index}>
-                          <>{rtc_view(a, a === main_publisher ? styles.ViewPlayers : styles.players)}</>
-                        </View>
-                      );
-                  })}
+                {remoteStreams.map((a, index) => {
+                  const count = remoteStreams.length;
+                  if (a)
+                    return (
+                      <View key={index}>
+                        <>
+                          {rtc_view(
+                            a,
+                            a === main_publisher
+                              ? styles.ViewPlayers
+                              : styles.players,
+                          )}
+                        </>
+                      </View>
+                    );
+                })}
               </>
             ) : (
               <></>
@@ -298,13 +319,23 @@ export default function Conference({navigation, route}) {
           <Text style={styles.btnTxt}>Refresh Room</Text>
         </TouchableOpacity>
         <>
-          <TouchableOpacity
-            onPress={() => {
-              handleSwitchCamera();
-            }}
-            style={styles.button}>
-            <Text>Switch Camera</Text>
-          </TouchableOpacity>
+          <View style={{flexDirection: 'row'}}>
+            <TouchableOpacity
+              onPress={() => {
+                handleMute()
+              }}
+              style={styles.button2}>
+              <Text>MUTE</Text>
+            </TouchableOpacity>
+            <View style={{padding:10}}></View>
+            <TouchableOpacity
+              onPress={() => {
+                handleUnMute()
+              }}
+              style={styles.button2}>
+              <Text>UNMUTE</Text>
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
@@ -338,7 +369,7 @@ const styles = StyleSheet.create({
     // width: 100,
     width: '100%',
     // height: 150,
-    height: "60%",
+    height: '60%',
     justifyContent: 'center',
     alignSelf: 'center',
   },
@@ -370,6 +401,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDDDDD',
     padding: 10,
     width: '100%',
+    marginTop: 20,
+  },
+  button2: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10,
+    flex:1,
     marginTop: 20,
   },
   heading: {
