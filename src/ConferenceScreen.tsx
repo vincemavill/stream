@@ -54,10 +54,9 @@ export default function Conference({route, navigation}) {
           setIsPlaying(true);
           setIsPublishing(true);
 
-          roomTimerId = setInterval(() => {
-            adaptor.getRoomInfo(roomId, data.streamId);
-          }, 5000);
-
+          // roomTimerId = setInterval(() => {
+          //   adaptor.getRoomInfo(roomId, data.streamId);
+          // }, 5000);
 
           break;
         case 'publish_finished':

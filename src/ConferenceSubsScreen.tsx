@@ -102,8 +102,8 @@ export default function Conference({route, navigation}) {
 
   const handleConnect = useCallback(() => {
     if (adaptor) {
-      // publishStreamId = generateRandomString(12);
-      publishStreamId = room_name_stream_id;
+      publishStreamId = generateRandomString(12);
+      // publishStreamId = room_name_stream_id;
       adaptor.publish(
         publishStreamId,
         undefined,

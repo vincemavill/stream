@@ -53,7 +53,7 @@ function App({navigation}): React.JSX.Element {
   const [publisher, setPublisher] = useState();
   const [refresher, setRefresher] = useState(true);
 
-  // const [textname, onChangeTextName] = useState('beta1');
+  // const [textname, onChangeTextName] = useState('coco1');
   // const [textpublisher, onChangeTextPublisher] = useState(
   //   // 'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
   //   'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
@@ -61,7 +61,7 @@ function App({navigation}): React.JSX.Element {
   // );
   // --------------------------------------------------------
   const [textnameconference, onChangeTextNameConference] =
-    useState('beta1');
+    useState('coco1');
   const [textconference, onChangeTextConference] = useState(
     // 'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
     'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
@@ -71,7 +71,7 @@ function App({navigation}): React.JSX.Element {
   //   useState('huvr_stream_id_123');
   // --------------------------------------------------------
   const [textnameconferencesubs, onChangeTextNameConferenceSubs] =
-    useState('beta1');
+    useState('coco1');
   const [textconferencesubs, onChangeTextConferenceSubs] = useState(
     // 'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
     'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
@@ -80,7 +80,7 @@ function App({navigation}): React.JSX.Element {
   // const [textnameconferencestreamid, onChangeTextNameConferenceStreamId] =
   //   useState('huvr_stream_id_123');
   // --------------------------------------------------------
-  const [textnameplayer, onChangeTextNamePlayer] = useState('beta1');
+  const [textnameplayer, onChangeTextNamePlayer] = useState('coco1');
   const [textplayer, onChangeTextPlayer] = useState(
     'wss://server.huvr.com:5443/WebRTCAppEE/websocket',
     // 'https://server.huvr.com:5443/WebRTCAppEE/play.html?id=vince1&playOrder=webrtc&mute=false&playType=webm',
