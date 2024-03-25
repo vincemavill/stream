@@ -15,10 +15,10 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@antmedia/react-native-ant-media@1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@antmedia/react-native-ant-media/-/react-native-ant-media-1.0.5.tgz#291ca9f04c141d3010b2d9f7b03c8225d09b180c"
-  integrity sha512-2Q4iqFRdvq11+7Iur0OyLYaw102PSyI3EtSEwZ40CVbOrWI3Boash0YQHX1P5LvOH6LWN2HNv4yFJJPBHQbGTg==
+"@antmedia/react-native-ant-media@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@antmedia/react-native-ant-media/-/react-native-ant-media-1.0.7.tgz#aa040de7992f51d4075326d63425b457bb15093d"
+  integrity sha512-/9E9Dgwfiilr2wlB5+mvm4n4+fTkKsGWYw/SyZ9NnsbZ7kUxI6bonrQ8GxjJY1PLpyHVexY13uoEi0CMe9i/YA==
   dependencies:
     react-native-webrtc "111.0.0"
 

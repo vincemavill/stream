@@ -10,17 +10,14 @@ import {
 import {useAntMedia, rtc_view} from '@antmedia/react-native-ant-media';
 
 export default function App({navigation,route}) {
-  // var defaultStreamName = 'stream1';
-  // const webSocketUrl = 'ws://server.com:5080/WebRTCAppEE/websocket';
-  //or webSocketUrl: 'wss://server.com:5443/WebRTCAppEE/websocket',
   var defaultStreamName = route.params.stream_name;
   const webSocketUrl = route.params.player_url;
+  //or webSocketUrl: 'wss://server.com:5443/WebRTCAppEE/websocket',
 
   const streamNameRef = useRef<string>(defaultStreamName);
   const [remoteMedia, setRemoteStream] = useState<string>('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [status, setStatus] = useState("status");
-
   const adaptor = useAntMedia({
     url: webSocketUrl,
     mediaConstraints: {
@@ -32,7 +29,7 @@ export default function App({navigation,route}) {
         facingMode: 'front',
       },
     },
-    callback(command: any, data: any) {
+    callback(command: any) {
       setStatus(command)
       switch (command) {
         case 'pong':
@@ -43,22 +40,18 @@ export default function App({navigation,route}) {
           break;
         case 'play_finished':
           console.log('play_finished');
-          
+          //InCallManager.stop();
           setIsPlaying(false);
           setRemoteStream('');
-        break;
-        case "newStreamAvailable": 
-        if(data.streamId == streamNameRef.current)
-          setRemoteStream(data.stream.toURL());
-        break;
+          break;
         default:
           console.log(command);
           break;
       }
     },
     callbackError: (err: any, data: any) => {
+      // console.error('callbackError', err, data);
       setStatus(err)
-      console.error('callbackError', err, data);
     },
     peer_connection_config: {
       iceServers: [
@@ -70,7 +63,18 @@ export default function App({navigation,route}) {
     debug: true,
   });
 
-
+  useEffect(() => {
+    if (adaptor && Object.keys(adaptor.remoteStreams).length > 0) {
+      for (let i in adaptor.remoteStreams) {
+        let st =
+          adaptor.remoteStreams[i] && 'toURL' in adaptor.remoteStreams[i]
+            ? adaptor.remoteStreams[i].toURL()
+            : null;
+        setRemoteStream(st || '');
+        break;
+      }
+    }
+  }, [adaptor]);
 
   const handlePlay = useCallback(() => {
     if (!adaptor) {
@@ -90,6 +94,7 @@ export default function App({navigation,route}) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.box}>
+        <Text style={styles.heading}>Ant Media WebRTC Play</Text>
         {!isPlaying ? (
           <>
             <TouchableOpacity onPress={handlePlay} style={styles.startButton}>
@@ -131,7 +136,7 @@ const styles = StyleSheet.create({
   },
   box: {
     alignSelf: 'center',
-    width: '90%',
+    width: '80%',
     height: '80%',
   },
   streamPlayer: {

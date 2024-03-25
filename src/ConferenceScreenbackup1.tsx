@@ -6,32 +6,34 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  ScrollView,
   SafeAreaView,
 } from 'react-native';
 import {useAntMedia, rtc_view} from '@antmedia/react-native-ant-media';
 
 import InCallManager from 'react-native-incall-manager';
-var publishStreamId: string;
 
-export default function Conference({route, navigation}) {
-  // var defaultRoomName = 'room1';
+export default function Conference({navigation, route}) {
+  // var defaultRoomName = 'streamTest1';
   // const webSocketUrl = 'ws://server.com:5080/WebRTCAppEE/websocket';
   //or webSocketUrl: 'wss://server.com:5443/WebRTCAppEE/websocket',
 
   var defaultRoomName = route.params.stream_name;
   const webSocketUrl = route.params.player_url;
-  var room_name_stream_id = route.params.stream_name + 'huvrstreamid';
+  var room_name_stream_id = route.params.stream_name + "huvrstreamid";
 
   const [localMedia, setLocalMedia] = useState('');
-  const [isPublishing, setIsPublishing] = useState(false);
+  const [remoteStreams, setremoteStreams] = useState<any>([]);
+
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [roomId, setRoomId] = useState(defaultRoomName);
-  const [remoteTracks, setremoteTracks] = useState<any>([]);
-
-  const [status, setStatus] = useState('status');
-
+  const [status, setStatus] = useState("status");
+  const stream = useRef({id: ''}).current;
   let roomTimerId: any = useRef(0).current;
+  let streamsList: any = useRef([]).current;
+  const [PlayStreamsListArr, updatePlayStreamsListArr] = useState<any>([]);
+
+  let allStreams: any = [];
 
   const adaptor = useAntMedia({
     url: webSocketUrl,
@@ -42,67 +44,103 @@ export default function Conference({route, navigation}) {
         height: 1920,
         frameRate: 30,
         facingMode: 'front',
+        // aspectRatio: 16/9 // landscape
+        // aspectRatio: 9/16 // portrait
       },
+      // aspectRatio: 9/16 // portrait
     },
     callback(command: any, data: any) {
-      setStatus(command);
+      setStatus(command)
       switch (command) {
         case 'pong':
           break;
-        case 'publish_started':
-          adaptor.play(roomId, undefined, roomId, []);
-          setIsPlaying(true);
-          setIsPublishing(true);
+        case 'joinedTheRoom':
+          console.log('joined the room!');
+
+          const tok = data.ATTR_ROOM_NAME;
+          adaptor.publish(data.streamId, tok);
+          const streams = data.streams;
+
+          if (streams != null) {
+            streams.forEach((item: any) => {
+              if (item === stream.id) return;
+              adaptor.play(item, tok, roomId);
+            });
+            streamsList = streams;
+            updatePlayStreamsListArr([]);
+
+            //reset media streams
+            setremoteStreams([]);
+
+            updatePlayStreamsListArr(streams);
+          }
 
           roomTimerId = setInterval(() => {
             adaptor.getRoomInfo(roomId, data.streamId);
           }, 5000);
 
-
+          break;
+        case 'publish_started':
+          setIsPublishing(true);
           break;
         case 'publish_finished':
+          streamsList = [];
           setIsPublishing(false);
+          break;
+        case 'streamJoined':
+          adaptor.play(data.streamId, undefined, roomId);
+          break;
+        case 'leavedFromRoom':
+          console.log('leavedFromRoom');
+
+          clearRoomInfoInterval();
+
+          if (PlayStreamsListArr != null) {
+            PlayStreamsListArr.forEach(function (item: any) {
+              removeRemoteVideo(item);
+            });
+          }
+
+          // we need to reset streams list
+          updatePlayStreamsListArr([]);
+
+          //reset media streams
+          setremoteStreams([]);
           break;
         case 'play_finished':
           console.log('play_finished');
-          removeRemoteVideo();
+          removeRemoteVideo(data.streamId);
           break;
-        case 'newTrackAvailable':
-          {
-            var incomingTrackId = data.track.id.substring('ARDAMSx'.length);
-
-            if (
-              incomingTrackId == roomId ||
-              incomingTrackId == publishStreamId
-            ) {
-              return;
+        case 'roomInformation':
+          //Checks if any new stream has added, if yes, plays.
+          for (let str of data.streams) {
+            if (!PlayStreamsListArr.includes(str)) {
+              adaptor.play(str, tok, roomId);
             }
-            console.log('new track available with id ', incomingTrackId);
-
-            setremoteTracks(prevTracks => {
-              const updatedTracks = {...prevTracks, [data.track.id]: data};
-              return updatedTracks;
-            });
-
-            data.stream.onremovetrack = event => {
-              console.log('track is removed with id: ' + event.track.id);
-              removeRemoteVideo(event.track.id);
-            };
           }
+
+          // Checks if any stream has been removed, if yes, removes the view and stops web rtc connection.
+          for (let str of PlayStreamsListArr) {
+            if (!data.streams.includes(str)) {
+              removeRemoteVideo(str);
+            }
+          }
+
+          //Lastly updates the current stream list with the fetched one.
+          updatePlayStreamsListArr(data.streams);
+
+          console.log(Platform.OS, 'data.streams', data.streams);
+          console.log(Platform.OS, 'PlayStreamsListArr', PlayStreamsListArr);
+
           break;
         default:
           break;
       }
     },
     callbackError: (err: any, data: any) => {
-      setStatus(err);
+      // console.error('callbackError', err, data);
+      setStatus(err)
       clearRoomInfoInterval();
-      if (err === 'no_active_streams_in_room') {
-        // it throws this error when there is no stream in the room
-        // so we shouldn't reset streams list
-      } else {
-        console.error('callbackError', err, data);
-      }
     },
     peer_connection_config: {
       iceServers: [
@@ -111,7 +149,7 @@ export default function Conference({route, navigation}) {
         },
       ],
     },
-    debug: true,
+    debug: false,
   });
 
   const clearRoomInfoInterval = () => {
@@ -121,78 +159,39 @@ export default function Conference({route, navigation}) {
 
   const handleConnect = useCallback(() => {
     if (adaptor) {
-      // publishStreamId = generateRandomString(12);
-      publishStreamId = room_name_stream_id;
-      adaptor.publish(
-        publishStreamId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        roomId,
-        '',
-      );
+      adaptor.joinRoom(roomId, room_name_stream_id);
+      setIsPlaying(true);
     }
   }, [adaptor, roomId]);
 
   const handleDisconnect = useCallback(() => {
     if (adaptor) {
-      adaptor.stop(publishStreamId);
-      adaptor.stop(roomId);
-      removeRemoteVideo();
-      setIsPlaying(false);
-      setIsPublishing(false);
+      adaptor.leaveFromRoom(roomId);
+
+      allStreams = [];
+
       clearRoomInfoInterval();
+      setIsPlaying(false);
     }
   }, [adaptor, clearRoomInfoInterval, roomId]);
 
-  const removeRemoteVideo = (streamId?: string) => {
-    if (streamId != null || streamId != undefined) {
-      setremoteTracks(prevTracks => {
-        const updatedTracks = {...prevTracks};
-        if (updatedTracks[streamId]) {
-          delete updatedTracks[streamId];
-          console.log('Deleting Remote Track:', streamId);
-          return updatedTracks;
-        } else {
-          return prevTracks;
-        }
-      });
-      return;
-    }
-    console.warn('clearing all the remote renderer', remoteTracks, streamId);
-    setremoteTracks([]);
+  const removeRemoteVideo = (streamId: any) => {
+    streamsList = [];
+
+    adaptor.stop(streamId);
+    streamsList = PlayStreamsListArr.filter((item: any) => item !== streamId);
+    updatePlayStreamsListArr(streamsList);
   };
 
   useEffect(() => {
     const verify = () => {
       if (adaptor.localStream.current && adaptor.localStream.current.toURL()) {
-        let videoTrack = adaptor.localStream.current.getVideoTracks()[0];
-        return setLocalMedia(videoTrack);
+        return setLocalMedia(adaptor.localStream.current.toURL());
       }
       setTimeout(verify, 5000);
     };
     verify();
   }, [adaptor.localStream]);
-
-  useEffect(() => {
-    if (localMedia && remoteTracks) {
-      InCallManager.start({media: 'video'});
-    }
-  }, [localMedia, remoteTracks]);
-
-  const generateRandomString = (length: number): string => {
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    const charactersLength = characters.length;
-
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charactersLength);
-      result += characters.charAt(randomIndex);
-    }
-    return result;
-  };
 
   const handleSwitchCamera = () => {
     if (adaptor.localStream.current) {
@@ -200,6 +199,55 @@ export default function Conference({route, navigation}) {
       videoTrack._switchCamera();
     }
   };
+
+  useEffect(() => {
+    if (localMedia && remoteStreams) {
+      InCallManager.start({media: 'audio'});
+      InCallManager.setForceSpeakerphoneOn(true);
+    }
+  }, [localMedia, remoteStreams]);
+
+  const getRemoteStreams = () => {
+    const remoteStreamArr: any = [];
+
+    if (adaptor && Object.keys(adaptor.remoteStreamsMapped).length > 0) {
+      for (let i in adaptor.remoteStreamsMapped) {
+        let st =
+          adaptor.remoteStreamsMapped[i] &&
+          'toURL' in adaptor.remoteStreamsMapped[i]
+            ? adaptor.remoteStreamsMapped[i].toURL()
+            : null;
+
+        if (PlayStreamsListArr.includes(i)) {
+          if (st) remoteStreamArr.push(st);
+        }
+      }
+    }
+
+    setremoteStreams(remoteStreamArr);
+  };
+
+  useEffect(() => {
+    const remoteStreamArr: any = [];
+
+    if (adaptor && Object.keys(adaptor.remoteStreamsMapped).length > 0) {
+      for (let i in adaptor.remoteStreamsMapped) {
+        console.log("adaptor.remoteStreamsMapped[i]--------------------------")
+        console.log(adaptor.remoteStreamsMapped[i])
+        let st =
+          adaptor.remoteStreamsMapped[i] &&
+          'toURL' in adaptor.remoteStreamsMapped[i]
+            ? adaptor.remoteStreamsMapped[i].toURL()
+            : null;
+
+        if (PlayStreamsListArr.includes(i)) {
+          if (st) remoteStreamArr.push(st);
+        }
+      }
+    }
+
+    setremoteStreams(remoteStreamArr);
+  }, [adaptor.remoteStreamsMapped]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -214,53 +262,54 @@ export default function Conference({route, navigation}) {
         ) : (
           <>
             {/* <Text style={styles.heading1}>Remote Streams</Text> */}
-            {
-              <ScrollView
-                horizontal={true}
-                contentContainerStyle={{
-                  flexDirection: 'column',
-                  flexWrap: 'wrap',
-                  justifyContent: 'space-between',
-                  margin: 5,
-                }}
-                style={{overflow: 'hidden'}}>
-                {Object.values(remoteTracks).map((trackObj, index) => {
-                  console.log('index', index, trackObj.track.id);
-                  if (trackObj)
-                    return (
-                      <View
-                        key={index}
-                        style={
-                          trackObj.track.kind === 'audio'
-                            ? {display: 'none'}
-                            : {}
-                        }>
-                        <>{rtc_view(trackObj.track, styles.players)}</>
-                      </View>
-                    );
-                })}
-              </ScrollView>
-            }
+            {remoteStreams.length <= 3 ? (
+              <>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignSelf: 'center',
+                    margin: 5,
+                  }}>
+                  {remoteStreams.map((a, index) => {
+                    const count = remoteStreams.length;
+                    console.log('count', count);
+                    if (a)
+                      return (
+                        <View key={index}>
+                          <>{rtc_view(a, styles.players)}</>
+                        </View>
+                      );
+                  })}
+                </View>
+              </>
+            ) : (
+              <></>
+            )}
             <TouchableOpacity style={styles.button} onPress={handleDisconnect}>
               <Text style={styles.btnTxt}>Leave Room</Text>
             </TouchableOpacity>
           </>
         )}
-        <TouchableOpacity
-          onPress={() => {
-            handleSwitchCamera();
-          }}
-          style={styles.button}>
-          <Text>Switch Camera</Text>
+        <TouchableOpacity style={styles.button} onPress={getRemoteStreams}>
+          <Text style={styles.btnTxt}>Refresh Room</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.button}>
-          <Text>Go Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.heading}>{status}</Text>
+        <>
+          <TouchableOpacity
+            onPress={() => {
+              handleSwitchCamera();
+            }}
+            style={styles.button}>
+            <Text>Switch Camera</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={styles.button}>
+            <Text>Go Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.heading}>{status}</Text>
+        </>
       </View>
     </SafeAreaView>
   );
@@ -286,12 +335,13 @@ const styles = StyleSheet.create({
     height: 0,
     justifyContent: 'center',
     alignSelf: 'center',
+
   },
   localPlayer: {
     backgroundColor: '#DDDDDD',
     borderRadius: 5,
     marginBottom: 5,
-    height: '70%',
+    height: "70%",
     flexDirection: 'row',
   },
   btnTxt: {
@@ -303,7 +353,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDDDDD',
     padding: 10,
     width: '100%',
-    marginTop: 20,
+    marginTop: 10,
   },
   heading: {
     alignSelf: 'center',
