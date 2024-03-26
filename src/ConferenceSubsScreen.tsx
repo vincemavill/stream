@@ -41,6 +41,8 @@ export default function Conference({route, navigation}) {
       setStatus(command)
       switch (command) {
         case 'pong':
+          InCallManager.setForceSpeakerphoneOn(true);
+          InCallManager.setKeepScreenOn(true);
           break;
         case 'publish_started':
           adaptor.play(roomId, undefined, roomId, []);
@@ -158,8 +160,6 @@ export default function Conference({route, navigation}) {
   useEffect(() => {
     if (localMedia && remoteTracks) {
       InCallManager.start({media: 'video'});
-      InCallManager.setForceSpeakerphoneOn(true);
-      InCallManager.setKeepScreenOn(true);
     }
   }, [localMedia, remoteTracks]);
 
