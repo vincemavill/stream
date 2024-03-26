@@ -41,15 +41,18 @@ export default function Conference({route, navigation}) {
       setStatus(command)
       switch (command) {
         case 'pong':
-          InCallManager.setForceSpeakerphoneOn(true);
-          InCallManager.setKeepScreenOn(true);
           break;
         case 'publish_started':
           adaptor.play(roomId, undefined, roomId, []);
           setIsPlaying(true);
           setIsPublishing(true);
+          setTimeout(() => {
+            InCallManager.setForceSpeakerphoneOn(true);
+            InCallManager.setKeepScreenOn(true);
+          }, 1000);
           break;
         case 'publish_finished':
+         
           setIsPublishing(false);
           break;
         case 'play_finished':
@@ -160,6 +163,8 @@ export default function Conference({route, navigation}) {
   useEffect(() => {
     if (localMedia && remoteTracks) {
       InCallManager.start({media: 'video'});
+      // InCallManager.setForceSpeakerphoneOn(true);
+      // InCallManager.setKeepScreenOn(true);
     }
   }, [localMedia, remoteTracks]);
 
