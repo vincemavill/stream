@@ -158,6 +158,8 @@ export default function Conference({route, navigation}) {
   useEffect(() => {
     if (localMedia && remoteTracks) {
       InCallManager.start({media: 'video'});
+      InCallManager.setForceSpeakerphoneOn(true);
+      InCallManager.setKeepScreenOn(true);
     }
   }, [localMedia, remoteTracks]);
 

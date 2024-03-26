@@ -12,6 +12,7 @@ import {
 import {useAntMedia, rtc_view} from '@antmedia/react-native-ant-media';
 
 import InCallManager from 'react-native-incall-manager';
+import axios from 'axios';
 var publishStreamId: string;
 
 export default function Conference({route, navigation}) {
@@ -120,6 +121,7 @@ export default function Conference({route, navigation}) {
 
   const handleConnect = useCallback(() => {
     if (adaptor) {
+      handleFetchApi("start");
       // publishStreamId = generateRandomString(12);
       publishStreamId = room_name_stream_id;
       adaptor.publish(
@@ -136,6 +138,7 @@ export default function Conference({route, navigation}) {
 
   const handleDisconnect = useCallback(() => {
     if (adaptor) {
+      handleFetchApi("stop");
       adaptor.stop(publishStreamId);
       adaptor.stop(roomId);
       removeRemoteVideo();
@@ -144,6 +147,41 @@ export default function Conference({route, navigation}) {
       clearRoomInfoInterval();
     }
   }, [adaptor, clearRoomInfoInterval, roomId]);
+
+  const handleFetchApi = (vv:string) => {
+
+    var streamIdRecord = room_name_stream_id+"_record";
+
+    let api 
+    let params
+
+    if(vv === "start"){
+      api = "https://server.huvr.com/WebRTCAppEE/rest/v1/media-push/start?streamId="+streamIdRecord;
+      params = {
+        url: "https://player-stg.huvr.com/?room="+defaultRoomName,
+        width: 1280,
+        height: 720
+      }
+    } else {
+      api = "https://server.huvr.com/WebRTCAppEE/rest/v1/media-push/stop/"+streamIdRecord;
+      params = {}
+    }
+
+    axios.post(api, params,
+      {
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Cache-Control': 'no-cache'
+        },
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
 
   const removeRemoteVideo = (streamId?: string) => {
     if (streamId != null || streamId != undefined) {
@@ -177,6 +215,8 @@ export default function Conference({route, navigation}) {
   useEffect(() => {
     if (localMedia && remoteTracks) {
       InCallManager.start({media: 'video'});
+      InCallManager.setForceSpeakerphoneOn(true);
+      InCallManager.setKeepScreenOn(true);
     }
   }, [localMedia, remoteTracks]);
 
