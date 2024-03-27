@@ -47,6 +47,7 @@ export default function Conference({route, navigation}) {
           setIsPlaying(true);
           setIsPublishing(true);
           setTimeout(() => {
+            InCallManager.setSpeakerphoneOn(true);
             InCallManager.setForceSpeakerphoneOn(true);
             InCallManager.setKeepScreenOn(true);
           }, 1000);
@@ -162,7 +163,8 @@ export default function Conference({route, navigation}) {
 
   useEffect(() => {
     if (localMedia && remoteTracks) {
-      InCallManager.start({media: 'video'});
+      InCallManager.start({media: 'audio'});
+      // InCallManager.start({media: 'video'});
       // InCallManager.setForceSpeakerphoneOn(true);
       // InCallManager.setKeepScreenOn(true);
     }
